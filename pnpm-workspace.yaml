@@ -1,0 +1,5 @@
+strictPeerDependencies: false
+registry: https://registry.npmmirror.com
+shamefullyHoist: true
+enablePrePostScripts: true
+shellEmulator: true
