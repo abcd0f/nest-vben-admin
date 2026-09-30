@@ -7,6 +7,51 @@
     "builder": "rspack"
   },
   "projects": {
+    "auth": {
+      "type": "library",
+      "root": "libs/auth",
+      "entryFile": "index",
+      "sourceRoot": "libs/auth/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/auth/tsconfig.lib.json"
+      }
+    },
+    "cache": {
+      "type": "library",
+      "root": "libs/cache",
+      "entryFile": "index",
+      "sourceRoot": "libs/cache/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/cache/tsconfig.lib.json"
+      }
+    },
+    "common": {
+      "type": "library",
+      "root": "libs/common",
+      "entryFile": "index",
+      "sourceRoot": "libs/common/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/common/tsconfig.lib.json"
+      }
+    },
+    "config": {
+      "type": "library",
+      "root": "libs/config",
+      "entryFile": "index",
+      "sourceRoot": "libs/config/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/config/tsconfig.lib.json"
+      }
+    },
+    "crypot": {
+      "type": "library",
+      "root": "libs/crypot",
+      "entryFile": "index",
+      "sourceRoot": "libs/crypot/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/crypot/tsconfig.lib.json"
+      }
+    },
     "database": {
       "type": "library",
       "root": "libs/database",
@@ -16,6 +61,78 @@
         "tsConfigPath": "libs/database/tsconfig.lib.json"
       }
     },
+    "logger": {
+      "type": "library",
+      "root": "libs/logger",
+      "entryFile": "index",
+      "sourceRoot": "libs/logger/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/logger/tsconfig.lib.json"
+      }
+    },
+    "mail": {
+      "type": "library",
+      "root": "libs/mail",
+      "entryFile": "index",
+      "sourceRoot": "libs/mail/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/mail/tsconfig.lib.json"
+      }
+    },
+    "permission": {
+      "type": "library",
+      "root": "libs/permission",
+      "entryFile": "index",
+      "sourceRoot": "libs/permission/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/permission/tsconfig.lib.json"
+      }
+    },
+    "queue": {
+      "type": "library",
+      "root": "libs/queue",
+      "entryFile": "index",
+      "sourceRoot": "libs/queue/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/queue/tsconfig.lib.json"
+      }
+    },
+    "redis": {
+      "type": "library",
+      "root": "libs/redis",
+      "entryFile": "index",
+      "sourceRoot": "libs/redis/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/redis/tsconfig.lib.json"
+      }
+    },
+    "sse": {
+      "type": "library",
+      "root": "libs/sse",
+      "entryFile": "index",
+      "sourceRoot": "libs/sse/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/sse/tsconfig.lib.json"
+      }
+    },
+    "storage": {
+      "type": "library",
+      "root": "libs/storage",
+      "entryFile": "index",
+      "sourceRoot": "libs/storage/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/storage/tsconfig.lib.json"
+      }
+    },
+    "swagger": {
+      "type": "library",
+      "root": "libs/swagger",
+      "entryFile": "index",
+      "sourceRoot": "libs/swagger/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/swagger/tsconfig.lib.json"
+      }
+    },
     "utils": {
       "type": "library",
       "root": "libs/utils",
@@ -23,6 +140,15 @@
       "sourceRoot": "libs/utils/src",
       "compilerOptions": {
         "tsConfigPath": "libs/utils/tsconfig.lib.json"
+      }
+    },
+    "websocket": {
+      "type": "library",
+      "root": "libs/websocket",
+      "entryFile": "index",
+      "sourceRoot": "libs/websocket/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/websocket/tsconfig.lib.json"
       }
     }
   }

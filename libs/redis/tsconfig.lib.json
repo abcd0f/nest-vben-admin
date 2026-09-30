@@ -3,7 +3,7 @@
   "compilerOptions": {
     "declaration": true,
     "rootDir": "../..",
-    "outDir": "../../dist/libs/database"
+    "outDir": "../../dist/libs/redis"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]

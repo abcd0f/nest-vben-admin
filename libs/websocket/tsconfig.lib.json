@@ -3,7 +3,7 @@
   "compilerOptions": {
     "declaration": true,
     "rootDir": "../..",
-    "outDir": "../../dist/libs/database"
+    "outDir": "../../dist/libs/websocket"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
