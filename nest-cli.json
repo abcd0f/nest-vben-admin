@@ -13,7 +13,10 @@
           "introspectComments": true,
           "skipAutoHttpCode": false,
           "autoFillEnumName": true,
-          "dtoFileNameSuffix": [".dto.ts", "dto/index.ts"]
+          "dtoFileNameSuffix": [
+            ".dto.ts",
+            "dto/index.ts"
+          ]
         }
       }
     ]
@@ -53,6 +56,15 @@
       "sourceRoot": "libs/config/src",
       "compilerOptions": {
         "tsConfigPath": "libs/config/tsconfig.lib.json"
+      }
+    },
+    "core": {
+      "type": "library",
+      "root": "libs/core",
+      "entryFile": "index",
+      "sourceRoot": "libs/core/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/core/tsconfig.lib.json"
       }
     },
     "crypot": {

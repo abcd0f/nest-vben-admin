@@ -31,6 +31,12 @@
       "@app/config/*": [
         "./libs/config/src/*"
       ],
+      "@app/core": [
+        "./libs/core/src/index.ts"
+      ],
+      "@app/core/*": [
+        "./libs/core/src/*"
+      ],
       "@app/crypot": [
         "./libs/crypot/src/index.ts"
       ],
