@@ -9,15 +9,20 @@ import { IsInt, IsOptional, Max, Min } from 'class-validator';
  * 谁改了字段名，这里编译期就会报错。默认值/上限也直接取自 `@app/database` 的常量，
  * 不复制一份数字，避免「文档写 200、代码封顶 100」这种漂移。
  *
- * 这里的 class-validator 装饰器是**给文档用的**：Swagger 插件会把
- * `@Min` / `@Max` / `@IsInt` 翻译成 schema 的 minimum / maximum / type。
- * 本应用目前没有挂全局 ValidationPipe，所以运行期不校验——
- * 非法值仍由 `normalizePage()` 兜底（回落默认值、pageSize 截断到上限）。
+ * 这里的 class-validator 装饰器**同时具备两种作用**：
+ * - 生成文档：Swagger 插件把 `@Min` / `@Max` / `@IsInt` 翻译成 schema 的
+ *   minimum / maximum / type；
+ * - 运行期校验：`@app/core` 的 `AppValidationPipe` 已通过 `CoreModule` 全局挂载，
+ *   非法参数会直接以 422 + 字段级错误列表返回，不再进入 controller。
+ *
+ * 两层防护是刻意保留的：管道负责「拒绝明显非法的输入」（非整数、小于 1），
+ * `normalizePage()` 负责「兜底」——`@IsOptional()` 意味着字段缺失时校验通过，
+ * 此时仍由 normalizePage() 给出默认值并把 pageSize 截断到上限。
  *
  * 注意一个插件的限制：它只解析**字面量**参数，`@Max(MAX_PAGE_SIZE)` 这种
  * 引用常量写法的 maximum 不会进 schema（`@Min(1)` 这种字面量才会）。
  * 这里刻意不为文档把 200 抄成字面量——单一事实来源比多一个 machine-readable
- * 上限更重要，上限写在描述里，运行期由 normalizePage() 保证。
+ * 上限更重要，上限写在描述里，运行期由校验管道与 normalizePage() 共同保证。
  *
  * 用法：
  *   @Get('list')

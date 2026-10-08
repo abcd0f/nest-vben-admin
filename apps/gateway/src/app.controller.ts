@@ -19,6 +19,10 @@ export class AppController {
    *
    * @remarks 分页参数由 `normalizePage()` 归一化：非法值回落到默认值，`pageSize` 上限 200。
    * 入参结构见 `PageQueryDto`，出参结构由 `UserPageDto` 描述——接口契约只有这一处定义。
+   *
+   * 注意：返回类型写的是**业务数据本身**。运行期外层还会被 `@app/core` 的
+   * `ResponseInterceptor` 包成 `{ code, message, data }`，但 Swagger 的 200 模型
+   * 只反映 `data` 的内容——这是当前已知的文档缺口，不是笔误。
    */
   @Get('list')
   async list(@Query() query: PageQueryDto): Promise<UserPageDto> {
