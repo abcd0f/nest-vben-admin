@@ -4,7 +4,7 @@
   "sourceRoot": "apps/gateway/src",
   "compilerOptions": {
     "deleteOutDir": true,
-    "builder": "rspack",
+    "builder": "tsc",
     "plugins": [
       {
         "name": "@nestjs/swagger",
@@ -12,6 +12,7 @@
           "classValidatorShim": true,
           "introspectComments": true,
           "skipAutoHttpCode": false,
+          "autoFillEnumName": true,
           "dtoFileNameSuffix": [".dto.ts", "dto/index.ts"]
         }
       }

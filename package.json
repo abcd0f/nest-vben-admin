@@ -12,7 +12,7 @@
     "start": "nest start gateway",
     "start:dev": "nest start gateway --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node  dist/apps/gateway/main.js",
+    "start:prod": "node  dist/apps/gateway/src/main.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "format": "prettier --write \"apps/**/*.{ts,js} libs/**/*.{ts,js}\"",
     "clean": "node ./script/clean.mjs",

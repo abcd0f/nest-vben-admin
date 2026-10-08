@@ -2,6 +2,7 @@ import { AuthModule } from '@app/auth';
 import { AppConfigModule } from '@app/config';
 import { DatabaseModule } from '@app/database';
 import { AppLoggerModule } from '@app/logger';
+import { AppSwaggerModule } from '@app/swagger';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller.js';
 
@@ -16,6 +17,8 @@ import { AppService } from './app.service.js';
     AppLoggerModule.forRoot(),
     // 全局模块，业务模块注入 PrismaService 时无需再 import
     DatabaseModule,
+    // 接口文档（注释驱动）。挂载动作在 main.ts 的 setupSwagger()，不在模块里。
+    AppSwaggerModule.forRoot(),
     AuthModule,
   ],
   controllers: [AppController],

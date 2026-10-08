@@ -6,6 +6,7 @@ import { appConfig } from './app.config.js';
 import { databaseConfig } from './database.config.js';
 import { validateEnv } from './env.validation.js';
 import { loggerConfig } from './logger.config.js';
+import { swaggerConfig } from './swagger.config.js';
 
 /**
  * 全局配置模块 —— 应用配置的唯一入口。
@@ -42,7 +43,7 @@ export class AppConfigModule {
           // 越具体越优先（@nestjs/config 中数组靠前的文件覆盖靠后的）
           envFilePath: [`.env.${nodeEnv}.local`, `.env.${nodeEnv}`, '.env.local', '.env'],
           validate: validateEnv,
-          load: [appConfig, databaseConfig, loggerConfig],
+          load: [appConfig, databaseConfig, loggerConfig, swaggerConfig],
         }),
       ],
       exports: [NestConfigModule],
