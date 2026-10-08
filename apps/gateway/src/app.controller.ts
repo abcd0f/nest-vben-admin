@@ -3,7 +3,6 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { AppService } from './app.service.js';
 import { toUserDto, UserDto } from './dto/user.dto.js';
 
-@ApiTags('App')
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
