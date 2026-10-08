@@ -10,7 +10,8 @@ export default antfu(
     typescript: true,
   },
   {
-    ignores: ['**/*.md'],
+    // generated 目录由 prisma generate 产出，不参与 lint
+    ignores: ['**/*.md', '**/generated/**'],
   },
   {
     rules: {

@@ -35,12 +35,13 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# dotenv environment variable files
+# dotenv environment variable files（模板 .env.example 需要提交）
 .env
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
+.env.*
+!.env.example
+
+# Prisma 生成物（由 prisma generate 产出，不入库）
+/libs/database/src/generated
 
 # temp directory
 .temp

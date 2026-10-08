@@ -1,0 +1,42 @@
+// Prisma schema
+// 文档：https://prisma.org.cn/docs/orm
+//
+// 注意：连接串不写在本文件里，统一由 prisma.config.ts + 环境变量注入，
+// 这样开发/正式环境切换只改 .env.*，不动 schema。
+
+generator client {
+  provider = "prisma-client"
+  output   = "../libs/database/src/generated/prisma"
+
+  // Prisma 7 默认走「查询编译器」，不再内置 Rust 引擎二进制。
+  // engineType = client 时必须配合驱动适配器（见 libs/database/src/prisma.service.ts）。
+  engineType = "client"
+
+  runtime = "nodejs"
+
+  // 本项目为严格 ESM（package.json type=module + tsconfig module=nodenext），
+  // 生成的相对导入必须带 .js 后缀才能被 tsc / rspack 正确解析。
+  moduleFormat           = "esm"
+  generatedFileExtension = "ts"
+  importFileExtension    = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// 用户（示例模型，仅为让 migrate 可用；按业务需要调整或删除）
+model User {
+  id        String    @id @default(uuid()) @db.Uuid
+  username  String    @unique @db.VarChar(64)
+  email     String?   @unique @db.VarChar(128)
+  password  String    @db.VarChar(255)
+  nickname  String?   @db.VarChar(64)
+  status    Int       @default(1) @db.SmallInt
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(3)
+
+  @@index([deletedAt])
+  @@map("users")
+}
