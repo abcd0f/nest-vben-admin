@@ -1,4 +1,5 @@
-import { Global, Module, type DynamicModule } from '@nestjs/common';
+import type { DynamicModule } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 
 import { AppSwaggerService } from './swagger.service.js';
 
@@ -13,7 +14,7 @@ import { AppSwaggerService } from './swagger.service.js';
  *   2. main.ts 里在 `app.listen()` **之前** 调 `setupSwagger(app)`
  *
  * 关不关、挂在哪、叫什么名字，全部由 `@app/config` 的 swagger 域决定
- * （见 libs/config/src/domains/swagger.config.ts）。
+ * （见 libs/config/src/swagger.config.ts）。
  */
 @Global()
 @Module({})

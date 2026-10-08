@@ -1,11 +1,12 @@
-import { Global, Module, type DynamicModule } from '@nestjs/common';
+import type { DynamicModule } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ConfigModule as NestConfigModule } from '@nestjs/config';
 
-import { appConfig } from './domains/app.config.js';
-import { databaseConfig } from './domains/database.config.js';
-import { loggerConfig } from './domains/logger.config.js';
-import { swaggerConfig } from './domains/swagger.config.js';
-import { validateEnv } from './env/env.validation.js';
+import { appConfig } from './app.config.js';
+import { databaseConfig } from './database.config.js';
+import { validateEnv } from './env.validation.js';
+import { loggerConfig } from './logger.config.js';
+import { swaggerConfig } from './swagger.config.js';
 
 /**
  * 全局配置模块 —— 应用配置的唯一入口。
@@ -24,10 +25,7 @@ import { validateEnv } from './env/env.validation.js';
  *   // 2. 走 ConfigService 的路径访问
  *   configService.get<string>('database.url')
  *
- * 新增一个配置域只需三步：
- *   1. domains/ 下新建 xxx.config.ts，导出 xxxEnvSchema + registerAs('xxx', ...)
- *   2. env/env.schema.ts 里把 xxxEnvSchema.shape spread 进去
- *   3. 本文件 `load` 数组里加上 xxxConfig
+ * 新增配置域时，在对应的 *.config.ts 中实现解析与注册，并在本文件注册 provider。
  */
 @Global()
 @Module({})
