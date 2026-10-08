@@ -38,5 +38,29 @@ describe('appController', () => {
         totalPages: 0,
       });
     });
+
+    it('响应中不得出现 password 等敏感字段', async () => {
+      const row = {
+        id: '00000000-0000-0000-0000-000000000000',
+        username: 'admin',
+        email: null,
+        password: 'hashed-secret',
+        nickname: null,
+        status: 1,
+        createdAt: new Date('2026-01-01T00:00:00.000Z'),
+        updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+        deletedAt: null,
+      };
+
+      prismaMock.user.findMany.mockResolvedValueOnce([row]);
+      prismaMock.user.count.mockResolvedValueOnce(1);
+
+      const result = await appController.list({});
+
+      expect(result.total).toBe(1);
+      expect(result.list[0]).not.toHaveProperty('password');
+      expect(result.list[0]).not.toHaveProperty('deletedAt');
+      expect(result.list[0]?.username).toBe('admin');
+    });
   });
 });

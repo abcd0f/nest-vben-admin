@@ -4,6 +4,7 @@ export * from './config.module.js';
 export * from './domains/app.config.js';
 export * from './domains/database.config.js';
 export * from './domains/logger.config.js';
+export * from './domains/swagger.config.js';
 
 // 环境变量的汇总契约、校验与共享工具
 export * from './env/env.schema.js';

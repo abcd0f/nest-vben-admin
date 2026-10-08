@@ -15,6 +15,19 @@ export function booleanEnv(defaultValue: 'true' | 'false' = 'false') {
 }
 
 /**
+ * 可选字符串：`.env` 里写 `FOO=` 会得到空串而不是 undefined，
+ * 直接当作「未设置」处理更符合直觉（否则空串会绕过默认值、也可能把
+ * `SWAGGER_SERVER_URL` 这类字段变成非法值）。
+ */
+export function optionalString() {
+  return z
+    .string()
+    .trim()
+    .optional()
+    .transform((value) => (value === '' ? undefined : value));
+}
+
+/**
  * 逗号分隔的环境变量 → 字符串数组：去空白、丢空项。
  * 环境变量里表达列表只能用字符串，统一在这里处理，避免每个域各写一遍。
  */

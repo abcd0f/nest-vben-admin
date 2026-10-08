@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { appEnvSchema } from '../domains/app.config.js';
 import { databaseEnvSchema } from '../domains/database.config.js';
 import { loggerEnvSchema } from '../domains/logger.config.js';
+import { swaggerEnvSchema } from '../domains/swagger.config.js';
 
 /**
  * 全局环境变量契约。
@@ -17,4 +18,5 @@ export const envSchema = z.object({
   ...appEnvSchema.shape,
   ...databaseEnvSchema.shape,
   ...loggerEnvSchema.shape,
+  ...swaggerEnvSchema.shape,
 });

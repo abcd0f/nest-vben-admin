@@ -4,6 +4,7 @@ import { ConfigModule as NestConfigModule } from '@nestjs/config';
 import { appConfig } from './domains/app.config.js';
 import { databaseConfig } from './domains/database.config.js';
 import { loggerConfig } from './domains/logger.config.js';
+import { swaggerConfig } from './domains/swagger.config.js';
 import { validateEnv } from './env/env.validation.js';
 
 /**
@@ -44,7 +45,7 @@ export class AppConfigModule {
           // 越具体越优先（@nestjs/config 中数组靠前的文件覆盖靠后的）
           envFilePath: [`.env.${nodeEnv}.local`, `.env.${nodeEnv}`, '.env.local', '.env'],
           validate: validateEnv,
-          load: [appConfig, databaseConfig, loggerConfig],
+          load: [appConfig, databaseConfig, loggerConfig, swaggerConfig],
         }),
       ],
       exports: [NestConfigModule],
