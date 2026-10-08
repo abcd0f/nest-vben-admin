@@ -1,7 +1,6 @@
-import { Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { databaseConfig, type DatabaseConfig } from '@app/config';
+import { Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { resolveDatabaseConfig, type DatabaseConfig } from './config/database.config.js';
 import { PrismaClient } from './generated/prisma/client.js';
 
 /**
@@ -11,7 +10,7 @@ import { PrismaClient } from './generated/prisma/client.js';
  * 1. Prisma 7 默认使用「查询编译器」，不再内置 Rust 引擎二进制，
  *    必须通过驱动适配器连接数据库。这里用 @prisma/adapter-pg + node-postgres，
  *    连接池参数（max / idle / connectTimeout）可直接调优，也能被 rspack 正常打包。
- * 2. 连接串来自 ConfigService（即环境变量），不写死在 schema 里，
+ * 2. 连接串来自 @app/config 的 database 命名空间，不写死在 schema 里，
  *    因此开发/正式环境切换零代码改动。
  * 3. schema 必须走 PrismaPg 的第二个参数，URL 上的 `?schema=` 只对 CLI 生效。
  * 4. 实现 OnModuleDestroy 后，配合 main.ts 的 app.enableShutdownHooks()，
@@ -22,9 +21,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   private readonly logger = new Logger(PrismaService.name);
   private readonly dbConfig: DatabaseConfig;
 
-  constructor(configService: ConfigService) {
-    const dbConfig = resolveDatabaseConfig(configService);
-
+  constructor(@Inject(databaseConfig.KEY) dbConfig: DatabaseConfig) {
     super({
       adapter: new PrismaPg(
         {

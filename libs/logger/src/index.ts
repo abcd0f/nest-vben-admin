@@ -1,4 +1,3 @@
-export * from './logger.config.js';
 export * from './logger.constants.js';
 export * from './logger.interceptor.js';
 export * from './logger.module.js';

@@ -1,26 +1,18 @@
 import { AuthModule } from '@app/auth';
-import { DatabaseModule, validateEnv } from '@app/database';
+import { AppConfigModule } from '@app/config';
+import { DatabaseModule } from '@app/database';
 import { AppLoggerModule } from '@app/logger';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller.js';
 
 import { AppService } from './app.service.js';
 
-const nodeEnv = process.env.NODE_ENV ?? 'development';
-
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      cache: true,
-      // 越具体越优先（先加载者生效）：
-      // .env.development.local > .env.development > .env.local > .env
-      envFilePath: [`.env.${nodeEnv}.local`, `.env.${nodeEnv}`, '.env.local', '.env'],
-      // 启动即校验，配置缺失/写错直接崩溃，不带病上线
-      validate: validateEnv,
-    }),
-    // 全局日志模块：接管 Nest 内置日志 + 提供业务日志门面
+    // 配置是所有模块的前置依赖，放第一位。
+    // 内部负责：按 NODE_ENV 加载 .env、启动时校验环境变量、注册各配置域。
+    AppConfigModule.forRoot(),
+    // 全局日志模块：pino 只写日志文件，控制台仍由 Nest ConsoleLogger 输出
     AppLoggerModule.forRoot(),
     // 全局模块，业务模块注入 PrismaService 时无需再 import
     DatabaseModule,

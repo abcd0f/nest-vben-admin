@@ -10,7 +10,7 @@ async function bootstrap() {
   app.enableShutdownHooks();
 
   const configService = app.get(ConfigService);
-  const port = configService.get<number>('PORT', 3000);
+  const port = configService.get<number>('app.port', 3000);
 
   await app.listen(port, '0.0.0.0');
   console.log(await app.getUrl());

@@ -1,7 +1,7 @@
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
+import type { LoggerConfig } from '@app/config';
 import pino from 'pino';
-import type { LoggerConfig } from './logger.config.js';
 
 /** pino DestinationStream 的最小契约 + 刷盘 / 关闭能力 */
 export interface RotatingFileStream {

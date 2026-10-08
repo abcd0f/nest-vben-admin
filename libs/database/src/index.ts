@@ -1,5 +1,3 @@
-export * from './config/database.config.js';
-export * from './config/env.schema.js';
 export * from './database.module.js';
 export * from './database.service.js';
 export * from './helpers/pagination.js';

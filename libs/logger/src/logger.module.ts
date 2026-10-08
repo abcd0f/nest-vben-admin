@@ -1,9 +1,8 @@
+import { loggerConfig, type LoggerConfig } from '@app/config';
 import { Global, Inject, Injectable, Module, type DynamicModule, type OnModuleDestroy } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import pino from 'pino';
 import { LOGGER_STREAMS, PINO_LOGGER } from './logger.constants.js';
-import { resolveLoggerConfig } from './logger.config.js';
 import { RequestLogInterceptor } from './logger.interceptor.js';
 import { AppLoggerService } from './logger.service.js';
 import { createLoggerStreams, localIsoTimestamp, type LoggerStreams } from './logger.streams.js';
@@ -48,29 +47,26 @@ export class AppLoggerModule {
     return {
       module: AppLoggerModule,
       global: true,
-      imports: [ConfigModule],
+      imports: [],
       providers: [
         {
           provide: LOGGER_STREAMS,
-          useFactory: (config: ConfigService) => createLoggerStreams(resolveLoggerConfig(config)),
-          inject: [ConfigService],
+          useFactory: (config: LoggerConfig) => createLoggerStreams(config),
+          inject: [loggerConfig.KEY],
         },
         {
           provide: PINO_LOGGER,
-          useFactory: (config: ConfigService, streams: LoggerStreams) => {
-            const { level, redact } = resolveLoggerConfig(config);
-
-            return pino(
+          useFactory: (config: LoggerConfig, streams: LoggerStreams) =>
+            pino(
               {
-                level,
-                redact: { paths: redact, censor: '[REDACTED]' },
+                level: config.level,
+                redact: { paths: config.redact, censor: '[REDACTED]' },
                 // 本地时间 + 时区偏移，与按本地日期命名的日志文件保持一致
                 timestamp: localIsoTimestamp,
               },
               streams.stream,
-            );
-          },
-          inject: [ConfigService, LOGGER_STREAMS],
+            ),
+          inject: [loggerConfig.KEY, LOGGER_STREAMS],
         },
         AppLoggerService,
         LoggerLifecycle,
