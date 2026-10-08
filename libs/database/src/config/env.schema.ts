@@ -21,6 +21,18 @@ export const envSchema = z.object({
     .enum(['true', 'false'])
     .default('false')
     .transform((value) => value === 'true'),
+
+  // ---------- 日志（pino 只负责写文件，控制台由 Nest 自带 ConsoleLogger 输出）----------
+  LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
+  /** 是否写入日志文件 */
+  LOG_FILE: z
+    .enum(['true', 'false'])
+    .default('true')
+    .transform((value) => value === 'true'),
+  /** 日志文件目录，按天生成 app-YYYY-MM-DD.log / error-YYYY-MM-DD.log */
+  LOG_DIR: z.string().min(1).default('logs'),
+  /** 追加脱敏路径，逗号分隔，如 req.headers["x-custom-secret"],*.idCard */
+  LOG_REDACT: z.string().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;
