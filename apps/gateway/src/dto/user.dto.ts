@@ -1,5 +1,6 @@
 import type { User } from '@app/database';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 
 /**
  * 用户出参 DTO。
@@ -12,25 +13,48 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
  * 因此对外响应统一走 `toUserDto()` 映射，不要让 `User` 直接穿过 controller 边界。
  */
 export class UserDto {
-  @ApiProperty({ description: '用户 ID', format: 'uuid' })
+  /** 用户 ID */
+  @Expose()
   id!: string;
 
-  @ApiProperty({ description: '用户名', example: 'admin' })
+  /** 用户名 */
+  @Expose()
   username!: string;
 
   @ApiPropertyOptional({ description: '邮箱', nullable: true, example: 'admin@example.com' })
+  /**
+   * 邮箱
+   * @example admin@example.com
+   */
   email?: string | null;
 
   @ApiPropertyOptional({ description: '昵称', nullable: true, example: '管理员' })
+  /**
+   * 昵称
+   * @example 管理员
+   */
   nickname?: string | null;
 
   @ApiProperty({ description: '状态：1 正常，0 停用', enum: [0, 1], example: 1 })
+  /**
+   * 状态：1 正常，0 停用
+   * @enum [0, 1]
+   * @example 1
+   */
   status!: number;
 
   @ApiProperty({ description: '创建时间', format: 'date-time' })
+  /**
+   * 创建时间
+   * @format date-time
+   */
   createdAt!: Date;
 
   @ApiProperty({ description: '更新时间', format: 'date-time' })
+  /**
+   * 更新时间
+   * @format date-time
+   */
   updatedAt!: Date;
 }
 

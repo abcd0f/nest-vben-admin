@@ -1,5 +1,4 @@
 import type { PageResult } from '@app/database';
-import { ApiCommonErrors, ApiPaginatedResponse, PageQueryDto } from '@app/swagger';
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AppService } from './app.service.js';
@@ -28,10 +27,7 @@ export class AppController {
    * 不在这里手写 `@ApiQuery` / `@ApiOkResponse`——契约只有一处定义。
    */
   @Get('list')
-  @ApiOperation({ summary: '用户列表（分页）' })
-  @ApiPaginatedResponse(UserDto, '用户分页列表')
-  @ApiCommonErrors()
-  async list(@Query() query: PageQueryDto): Promise<PageResult<UserDto>> {
+  async list(@Query() query: any): Promise<PageResult<UserDto>> {
     const result = await this.appService.list(query);
 
     return { ...result, list: result.list.map(toUserDto) };
