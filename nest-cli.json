@@ -7,15 +7,6 @@
     "builder": "rspack"
   },
   "projects": {
-    "gateway": {
-      "type": "application",
-      "root": "apps/gateway",
-      "entryFile": "main",
-      "sourceRoot": "apps/gateway/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/gateway/tsconfig.app.json"
-      }
-    },
     "auth": {
       "type": "library",
       "root": "libs/auth",
@@ -43,6 +34,15 @@
         "tsConfigPath": "libs/common/tsconfig.lib.json"
       }
     },
+    "config": {
+      "type": "library",
+      "root": "libs/config",
+      "entryFile": "index",
+      "sourceRoot": "libs/config/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/config/tsconfig.lib.json"
+      }
+    },
     "crypot": {
       "type": "library",
       "root": "libs/crypot",
@@ -59,6 +59,15 @@
       "sourceRoot": "libs/database/src",
       "compilerOptions": {
         "tsConfigPath": "libs/database/tsconfig.lib.json"
+      }
+    },
+    "gateway": {
+      "type": "application",
+      "root": "apps/gateway",
+      "entryFile": "main",
+      "sourceRoot": "apps/gateway/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/gateway/tsconfig.app.json"
       }
     },
     "logger": {
