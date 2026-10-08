@@ -1,6 +1,5 @@
 import type { PageResult } from '@app/database';
 import { Controller, Get, Query } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AppService } from './app.service.js';
 import { toUserDto, UserDto } from './dto/user.dto.js';
 
@@ -10,7 +9,6 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  @ApiOperation({ summary: '健康检查', description: '返回固定问候语，用于探活。' })
   getHello(): string {
     return this.appService.getHello();
   }

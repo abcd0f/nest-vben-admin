@@ -1,5 +1,4 @@
 import type { User } from '@app/database';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 
 /**
@@ -21,21 +20,18 @@ export class UserDto {
   @Expose()
   username!: string;
 
-  @ApiPropertyOptional({ description: '邮箱', nullable: true, example: 'admin@example.com' })
   /**
    * 邮箱
    * @example admin@example.com
    */
   email?: string | null;
 
-  @ApiPropertyOptional({ description: '昵称', nullable: true, example: '管理员' })
   /**
    * 昵称
    * @example 管理员
    */
   nickname?: string | null;
 
-  @ApiProperty({ description: '状态：1 正常，0 停用', enum: [0, 1], example: 1 })
   /**
    * 状态：1 正常，0 停用
    * @enum [0, 1]
@@ -43,14 +39,12 @@ export class UserDto {
    */
   status!: number;
 
-  @ApiProperty({ description: '创建时间', format: 'date-time' })
   /**
    * 创建时间
    * @format date-time
    */
   createdAt!: Date;
 
-  @ApiProperty({ description: '更新时间', format: 'date-time' })
   /**
    * 更新时间
    * @format date-time
