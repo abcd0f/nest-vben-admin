@@ -1,5 +1,5 @@
 import type { PageResult, User } from '@app/database';
-import { Exclude, Expose, Transform, Type, plainToInstance } from 'class-transformer';
+import { Exclude, Expose, plainToInstance, Transform, Type } from 'class-transformer';
 
 /**
  * 用户状态。取值严格对齐 `prisma/schema.prisma` 的 `status Int @default(1) @db.SmallInt`

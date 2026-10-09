@@ -1,7 +1,6 @@
 import { PartialType } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { IsEnum, IsOptional } from 'class-validator';
-import { toOptionalNumber } from '../../../../dto/transform.util.js';
 import { CreateUserDto } from './create-user.dto.js';
 import { UserStatus } from './response.dto.js';
 
@@ -30,7 +29,6 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
    */
   @IsOptional()
   @Type(() => String)
-  @Transform(({ value }) => toOptionalNumber(value))
   @IsEnum(UserStatus, { message: '状态只能是 0（停用）或 1（正常）' })
   status?: UserStatus;
 }

@@ -1,7 +1,6 @@
-import { Transform, Type } from 'class-transformer';
+import { PageQueryDto } from '@app/common';
+import { Type } from 'class-transformer';
 import { IsEnum, IsOptional, IsString, MaxLength } from 'class-validator';
-import { PageQueryDto } from '../../../../dto/page-query.dto.js';
-import { toOptionalNumber } from '../../../../dto/transform.util.js';
 import { UserStatus } from './response.dto.js';
 
 /**
@@ -52,7 +51,6 @@ export class QueryUserDto extends PageQueryDto {
    */
   @IsOptional()
   @Type(() => String)
-  @Transform(({ value }) => toOptionalNumber(value))
   @IsEnum(UserStatus, { message: '状态只能是 0（停用）或 1（正常）' })
   status?: UserStatus;
 }
