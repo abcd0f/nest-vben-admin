@@ -1,7 +1,7 @@
 /// 系统用户模型
 model User {
-  /// 用户唯一标识，使用 UUID 自动生成
-  userId String @id @default(uuid()) @db.Uuid @map("user_id")
+  /// 用户唯一标识，id 自增
+  userId BigInt @id @default(autoincrement()) @map("user_id")
 
   /// 部门 ID，可为空且全局唯一
   deptId String? @unique @db.VarChar(64) @map("dept_id")
