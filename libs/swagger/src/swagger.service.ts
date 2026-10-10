@@ -1,7 +1,10 @@
-import { swaggerConfig, type SwaggerConfig } from '@app/config';
+import type { SwaggerConfig } from '@app/config';
+import type { INestApplication } from '@nestjs/common';
+import type { OpenAPIObject, SwaggerCustomOptions } from '@nestjs/swagger';
+import { swaggerConfig } from '@app/config';
 import { AppLoggerService } from '@app/logger';
-import { Inject, Injectable, type INestApplication } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule, type OpenAPIObject, type SwaggerCustomOptions } from '@nestjs/swagger';
+import { Inject, Injectable } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 /**
  * 注释驱动文档所需的插件元数据工厂。

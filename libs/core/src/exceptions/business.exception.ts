@@ -1,5 +1,5 @@
 import { HttpException } from '@nestjs/common';
-import { ResultCode, resolveHttpStatus, resultCodeMessage } from '../constants/index.js';
+import { resolveHttpStatus, ResultCode, resultCodeMessage } from '../constants/index.js';
 
 export interface BusinessExceptionOptions {
   /** 覆盖由 `code` 推导出的 HTTP 状态码（默认走 `resolveHttpStatus()`） */

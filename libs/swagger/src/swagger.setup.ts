@@ -1,6 +1,7 @@
 import type { INestApplication } from '@nestjs/common';
 
-import { AppSwaggerService, type SwaggerDocsPaths, type SwaggerMetadataFactory } from './swagger.service.js';
+import type { SwaggerDocsPaths } from './swagger.service.js';
+import { AppSwaggerService } from './swagger.service.js';
 
 /**
  * 挂载接口文档，返回访问路径（未启用时返回 `undefined`）。

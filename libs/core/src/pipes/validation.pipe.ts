@@ -1,5 +1,6 @@
-import { Injectable, ValidationPipe, type ValidationPipeOptions } from '@nestjs/common';
+import type { ValidationPipeOptions } from '@nestjs/common';
 import type { ValidationError } from 'class-validator';
+import { Injectable, ValidationPipe } from '@nestjs/common';
 import { ResultCode } from '../constants/index.js';
 import { BusinessException } from '../exceptions/index.js';
 

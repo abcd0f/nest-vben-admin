@@ -1,6 +1,8 @@
+import type { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
+import type { Observable } from 'rxjs';
 import { randomUUID } from 'node:crypto';
-import { Injectable, type CallHandler, type ExecutionContext, type NestInterceptor } from '@nestjs/common';
-import { tap, type Observable } from 'rxjs';
+import { Injectable } from '@nestjs/common';
+import { tap } from 'rxjs';
 import { AppLoggerService } from './logger.service.js';
 
 /** 只声明实际用到的字段，避免绑定具体 HTTP 适配器（Fastify / Express 都适用） */

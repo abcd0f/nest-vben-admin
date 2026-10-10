@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
 import type { Prisma } from './generated/prisma/client.js';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service.js';
 
 /** 事务内可用的 Prisma 客户端（不含 $transaction / $connect 等） */

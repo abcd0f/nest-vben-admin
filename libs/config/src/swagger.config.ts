@@ -31,13 +31,13 @@ export function parseSwaggerEnv(raw: EnvSource): SwaggerEnv {
   const env = {
     // 刻意不做「空字符串 = 自动」：不声明该变量才是自动。
     // 要显式控制就写 true / false，写空串属于配置错误，直接报出来。
-    SWAGGER_ENABLED: collectEnvValue(errors, undefined, () =>
-      optionalEnum(raw, 'SWAGGER_ENABLED', ['true', 'false'] as const),
-    ),
+    SWAGGER_ENABLED: collectEnvValue(errors, undefined, () => {
+      return optionalEnum(raw, 'SWAGGER_ENABLED', ['true', 'false'] as const);
+    }),
     SWAGGER_PATH: collectEnvValue(errors, 'docs', () => stringValue(raw, 'SWAGGER_PATH', 'docs', 1)),
-    SWAGGER_TITLE: collectEnvValue(errors, 'Nest Vben Admin API', () =>
-      stringValue(raw, 'SWAGGER_TITLE', 'Nest Vben Admin API', 1),
-    ),
+    SWAGGER_TITLE: collectEnvValue(errors, 'Nest Vben Admin API', () => {
+      return stringValue(raw, 'SWAGGER_TITLE', 'Nest Vben Admin API', 1);
+    }),
     SWAGGER_DESCRIPTION: collectEnvValue(errors, '', () => stringValue(raw, 'SWAGGER_DESCRIPTION', '', 0)),
     SWAGGER_VERSION: collectEnvValue(errors, '1.0.0', () => stringValue(raw, 'SWAGGER_VERSION', '1.0.0', 1)),
   };
@@ -65,6 +65,6 @@ export function createSwaggerConfig(env: SwaggerEnv, nodeEnv = process.env.NODE_
   };
 }
 
-export const swaggerConfig = registerAs('swagger', (): SwaggerConfig =>
-  createSwaggerConfig(parseSwaggerEnv(process.env)),
-);
+export const swaggerConfig = registerAs('swagger', (): SwaggerConfig => {
+  return createSwaggerConfig(parseSwaggerEnv(process.env));
+});

@@ -1,5 +1,7 @@
-import { databaseConfig, type DatabaseConfig } from '@app/config';
-import { Inject, Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
+import type { DatabaseConfig } from '@app/config';
+import type { OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { databaseConfig } from '@app/config';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from './generated/prisma/client.js';
 

@@ -1,11 +1,14 @@
-import { loggerConfig, type LoggerConfig } from '@app/config';
-import { Global, Inject, Injectable, Module, type DynamicModule, type OnModuleDestroy } from '@nestjs/common';
+import type { LoggerConfig } from '@app/config';
+import type { DynamicModule, OnModuleDestroy } from '@nestjs/common';
+import type { LoggerStreams } from './logger.streams.js';
+import { loggerConfig } from '@app/config';
+import { Global, Inject, Injectable, Module } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import pino from 'pino';
 import { LOGGER_STREAMS, PINO_LOGGER } from './logger.constants.js';
 import { RequestLogInterceptor } from './logger.interceptor.js';
 import { AppLoggerService } from './logger.service.js';
-import { createLoggerStreams, localIsoTimestamp, type LoggerStreams } from './logger.streams.js';
+import { createLoggerStreams, localIsoTimestamp } from './logger.streams.js';
 
 /**
  * 进程退出前把 pino 的异步缓冲刷到磁盘。

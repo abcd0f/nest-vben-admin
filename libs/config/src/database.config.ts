@@ -34,10 +34,12 @@ export function parseDatabaseEnv(raw: EnvSource): DatabaseEnv {
   const env = {
     DATABASE_URL: collectEnvValue(errors, '', () => stringValue(raw, 'DATABASE_URL', undefined, 1)),
     DATABASE_POOL_MAX: collectEnvValue(errors, 10, () => integerValue(raw, 'DATABASE_POOL_MAX', 10, 1)),
-    DATABASE_POOL_IDLE_TIMEOUT: collectEnvValue(errors, 10_000, () =>
-      integerValue(raw, 'DATABASE_POOL_IDLE_TIMEOUT', 10_000, 0)),
-    DATABASE_CONNECT_TIMEOUT: collectEnvValue(errors, 5_000, () =>
-      integerValue(raw, 'DATABASE_CONNECT_TIMEOUT', 5_000, 0)),
+    DATABASE_POOL_IDLE_TIMEOUT: collectEnvValue(errors, 10_000, () => {
+      return integerValue(raw, 'DATABASE_POOL_IDLE_TIMEOUT', 10_000, 0);
+    }),
+    DATABASE_CONNECT_TIMEOUT: collectEnvValue(errors, 5_000, () => {
+      return integerValue(raw, 'DATABASE_CONNECT_TIMEOUT', 5_000, 0);
+    }),
     DATABASE_LOG_QUERIES: collectEnvValue(errors, false, () => booleanValue(raw, 'DATABASE_LOG_QUERIES', false)),
   };
 
@@ -66,5 +68,6 @@ export function createDatabaseConfig(env: DatabaseEnv): DatabaseConfig {
   };
 }
 
-export const databaseConfig = registerAs('database', (): DatabaseConfig =>
-  createDatabaseConfig(parseDatabaseEnv(process.env)));
+export const databaseConfig = registerAs('database', (): DatabaseConfig => {
+  return createDatabaseConfig(parseDatabaseEnv(process.env));
+});

@@ -7,7 +7,6 @@ import { AppSwaggerModule } from '@app/swagger';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller.js';
 
-
 import { UserModule } from './modules/system/user/user.module.js';
 
 @Module({

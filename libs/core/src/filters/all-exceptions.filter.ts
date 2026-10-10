@@ -1,8 +1,9 @@
-import { AppLoggerService } from '@app/logger';
-import { ArgumentsHost, Catch, HttpException, HttpStatus, type ExceptionFilter } from '@nestjs/common';
-import { ResultCode, resolveHttpStatus } from '../constants/index.js';
-import { BusinessException } from '../exceptions/index.js';
+import type { ExceptionFilter } from '@nestjs/common';
 import type { ApiErrorResponse } from '../interfaces/index.js';
+import { AppLoggerService } from '@app/logger';
+import { ArgumentsHost, Catch, HttpException, HttpStatus } from '@nestjs/common';
+import { resolveHttpStatus, ResultCode } from '../constants/index.js';
+import { BusinessException } from '../exceptions/index.js';
 
 /**
  * 只声明实际用到的字段，不绑定具体 HTTP 适配器。
@@ -16,8 +17,8 @@ interface HttpRequestLike {
 }
 
 interface HttpResponseLike {
-  status(code: number): HttpResponseLike;
-  send(payload: unknown): unknown;
+  status: (code: number) => HttpResponseLike;
+  send: (payload: unknown) => unknown;
 }
 
 interface ResolvedError {

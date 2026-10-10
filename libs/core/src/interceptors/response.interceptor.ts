@@ -1,9 +1,12 @@
-import { CallHandler, ExecutionContext, Injectable, type NestInterceptor } from '@nestjs/common';
+import type { NestInterceptor } from '@nestjs/common';
+import type { Observable } from 'rxjs';
+import type { ApiResponse } from '../interfaces/index.js';
+import { CallHandler, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { map, type Observable } from 'rxjs';
+import { map } from 'rxjs';
 import { ResultCode, resultCodeMessage } from '../constants/index.js';
 import { SKIP_RESPONSE_WRAP } from '../decorators/index.js';
-import { isApiResponse, type ApiResponse } from '../interfaces/index.js';
+import { isApiResponse } from '../interfaces/index.js';
 
 /**
  * 统一响应包装拦截器。

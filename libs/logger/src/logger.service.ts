@@ -1,5 +1,6 @@
-import { Inject, Injectable, Scope, type LoggerService, type LogLevel } from '@nestjs/common';
+import type { LoggerService, LogLevel } from '@nestjs/common';
 import type pino from 'pino';
+import { Inject, Injectable, Scope } from '@nestjs/common';
 import { PINO_LOGGER } from './logger.constants.js';
 
 /** 结构化日志的附加字段 */

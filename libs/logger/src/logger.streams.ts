@@ -1,13 +1,13 @@
+import type { LoggerConfig } from '@app/config';
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
-import type { LoggerConfig } from '@app/config';
 import pino from 'pino';
 
 /** pino DestinationStream 的最小契约 + 刷盘 / 关闭能力 */
 export interface RotatingFileStream {
-  write(chunk: string): void;
-  flushSync(): void;
-  close(): void;
+  write: (chunk: string) => void;
+  flushSync: () => void;
+  close: () => void;
 }
 
 /** 本地日期 → YYYY-MM-DD，用作日志文件名的日期段 */
@@ -98,7 +98,7 @@ export function createDailyRotatingStream(options: {
 export interface LoggerStreams {
   stream: pino.MultiStreamRes<pino.LevelWithSilent>;
   /** 进程退出前调用：刷盘并释放文件句柄 */
-  close(): void;
+  close: () => void;
 }
 
 /**

@@ -20,8 +20,9 @@ export interface AppConfig {
 export function parseAppEnv(raw: EnvSource): AppEnv {
   const errors: string[] = [];
   const env = {
-    NODE_ENV: collectEnvValue<NodeEnv>(errors, 'development', () =>
-      enumValue(raw, 'NODE_ENV', NODE_ENVS, 'development')),
+    NODE_ENV: collectEnvValue<NodeEnv>(errors, 'development', () => {
+      return enumValue(raw, 'NODE_ENV', NODE_ENVS, 'development');
+    }),
     PORT: collectEnvValue(errors, 3000, () => integerValue(raw, 'PORT', 3000, 1)),
   };
 
