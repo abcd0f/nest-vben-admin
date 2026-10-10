@@ -66,6 +66,12 @@
       ],
       "@app/swagger/*": [
         "./libs/swagger/src/*"
+      ],
+      "@app/utils": [
+        "./libs/utils/src/index.ts"
+      ],
+      "@app/utils/*": [
+        "./libs/utils/src/*"
       ]
     },
     "resolvePackageJsonExports": true,
