@@ -67,15 +67,6 @@
         "tsConfigPath": "libs/core/tsconfig.lib.json"
       }
     },
-    "crypot": {
-      "type": "library",
-      "root": "libs/crypot",
-      "entryFile": "index",
-      "sourceRoot": "libs/crypot/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/crypot/tsconfig.lib.json"
-      }
-    },
     "database": {
       "type": "library",
       "root": "libs/database",

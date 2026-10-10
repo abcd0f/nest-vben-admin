@@ -37,12 +37,6 @@
       "@app/core/*": [
         "./libs/core/src/*"
       ],
-      "@app/crypot": [
-        "./libs/crypot/src/index.ts"
-      ],
-      "@app/crypot/*": [
-        "./libs/crypot/src/*"
-      ],
       "@app/database": [
         "./libs/database/src/index.ts"
       ],
