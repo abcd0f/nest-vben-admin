@@ -10,7 +10,7 @@ for (const path of [`.env.${nodeEnv}.local`, `.env.${nodeEnv}`, '.env.local', '.
 }
 
 export default defineConfig({
-  schema: 'prisma/schema.prisma',
+  schema: 'prisma/',
   migrations: {
     path: 'prisma/migrations',
   },

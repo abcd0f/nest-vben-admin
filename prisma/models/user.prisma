@@ -1,0 +1,54 @@
+/// 系统用户模型
+model User {
+  /// 用户唯一标识，使用 UUID 自动生成
+  userId String @id @default(uuid()) @db.Uuid @map("user_id")
+
+  /// 部门 ID，可为空且全局唯一
+  deptId String? @unique @db.VarChar(64) @map("dept_id")
+
+  /// 用户登录账号，全局唯一
+  username String @unique @db.VarChar(64)
+
+  /// 用户昵称，可为空
+  nickName String? @db.VarChar(64) @map("nickname")
+
+  /// 用户手机号码，可为空且全局唯一
+  phone String? @unique @db.VarChar(32)
+
+  /// 用户性别，可为空
+  /// 默认值：0； 0 男 1 女
+  sex Int? @db.SmallInt @default(0)
+
+  /// 用户头像地址，可为空
+  avatar String? @db.VarChar(255)
+
+  /// 用户电子邮箱，可为空且全局唯一
+  email String? @unique @db.VarChar(128)
+
+  /// 用户密码哈希值 应存储经过安全算法处理的密码哈希，禁止存储明文密码
+  password String @db.VarChar(255)
+
+  /// 用户状态 0 禁用 1 正常
+  status Int @default(1) @db.SmallInt
+
+  /// 用户最近一次登录的 IP 地址
+  loginIp String? @db.VarChar(64) @map("login_ip")
+
+  /// 用户最近一次登录时间
+  loginDate DateTime? @map("login_date") @db.Timestamptz(3)
+
+  /// 用户记录创建时间
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  /// 用户记录最后更新时间
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  /// 用户软删除时间
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(3)
+
+  /// 为软删除时间建立索引
+  @@index([deletedAt])
+
+  /// 指定数据库表名为 sys_user
+  @@map("sys_user")
+}
