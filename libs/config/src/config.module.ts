@@ -7,6 +7,7 @@ import { corsConfig } from './cors.config.js';
 import { databaseConfig } from './database.config.js';
 import { validateEnv } from './env.validation.js';
 import { loggerConfig } from './logger.config.js';
+import { redisConfig } from './redis.config.js';
 import { swaggerConfig } from './swagger.config.js';
 
 /**
@@ -44,7 +45,7 @@ export class AppConfigModule {
           // 越具体越优先（@nestjs/config 中数组靠前的文件覆盖靠后的）
           envFilePath: [`.env.${nodeEnv}.local`, `.env.${nodeEnv}`, '.env.local', '.env'],
           validate: validateEnv,
-          load: [appConfig, corsConfig, databaseConfig, loggerConfig, swaggerConfig],
+          load: [appConfig, corsConfig, databaseConfig, loggerConfig, redisConfig, swaggerConfig],
         }),
       ],
       exports: [NestConfigModule],

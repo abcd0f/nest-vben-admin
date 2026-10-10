@@ -1,4 +1,5 @@
 import { AuthModule } from '@app/auth';
+import { CacheModule } from '@app/cache';
 import { AppConfigModule } from '@app/config';
 import { CoreModule } from '@app/core';
 import { DatabaseModule } from '@app/database';
@@ -21,6 +22,9 @@ import { UserModule } from './modules/system/user/user.module.js';
     CoreModule.forRoot(),
     // 全局模块，业务模块注入 PrismaService 时无需再 import
     DatabaseModule,
+    // Redis 集成与封装（全局模块）。默认 REDIS_ENABLED=false 不建立连接；
+    // 开启后提供 CacheService（缓存门面）与 RedisService（原生命令逃生口）。
+    CacheModule.forRoot(),
     // 接口文档（注释驱动）。挂载动作在 main.ts 的 setupSwagger()，不在模块里。
     AppSwaggerModule.forRoot(),
     AuthModule,

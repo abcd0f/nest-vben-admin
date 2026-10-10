@@ -7,5 +7,7 @@ export { databaseConfig } from './database.config.js';
 export type { DatabaseConfig, DatabasePoolConfig } from './database.config.js';
 export { loggerConfig } from './logger.config.js';
 export type { LoggerConfig, LoggerFileConfig, LogLevelName } from './logger.config.js';
+export { redisConfig } from './redis.config.js';
+export type { RedisConfig, RedisEnv } from './redis.config.js';
 export { swaggerConfig } from './swagger.config.js';
 export type { SwaggerConfig, SwaggerEnv } from './swagger.config.js';
