@@ -24,14 +24,19 @@ export class PageQueryDto {
   page?: number = 1;
 
   /**
-   * 页大小
+   * 页大小，缺省 20，上限 200；超出上限返回 422
+   *
+   * 取值必须与 `@app/database` 的 `DEFAULT_PAGE_SIZE` / `MAX_PAGE_SIZE` 保持一致：
+   * DTO 负责「校验层」的严格约束（越界返回 422），`paginate()` 负责「兜底层」
+   * 的缺省与截断，两者数字一旦漂移就会出现「文档写 200、代码封顶 100」。
+   * 不在这里引常量是刻意为之——`common` 是比 `database` 更底层的库，不应反向依赖。
    */
   @IsOptional()
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  @Max(100)
-  pageSize?: number = 10;
+  @Max(200)
+  pageSize?: number = 20;
 
   /**
    * 排序字段

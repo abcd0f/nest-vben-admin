@@ -1,5 +1,6 @@
+import { toOptionalNumber } from '@app/common';
 import { PartialType } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsEnum, IsOptional } from 'class-validator';
 import { CreateUserDto } from './create-user.dto.js';
 import { UserStatus } from './response.dto.js';
@@ -12,7 +13,7 @@ import { UserStatus } from './response.dto.js';
  * 典型症状是「新增时限制 64 位、更新时忘了加」，超长值只在更新路径上炸。
  *
  * 关于 `password`：本 DTO 保留可选的 `password`，`UserService.update()`
- * 会在检测到该字段时重新哈希。若业务上要求「改密码必须校验旧密码」，
+ * 会在检测到该字段时直接更新密码。若业务上要求「改密码必须校验旧密码」，
  * 应另开 `PATCH /system/user/:id/password` 端点，不要在这个通用更新接口里
  * 掺入旧密码校验——那会让「只改昵称」的请求也被迫携带密码。
  *
@@ -29,6 +30,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
    */
   @IsOptional()
   @Type(() => String)
+  @Transform(({ value }) => toOptionalNumber(value))
   @IsEnum(UserStatus, { message: '状态只能是 0（停用）或 1（正常）' })
   status?: UserStatus;
 }

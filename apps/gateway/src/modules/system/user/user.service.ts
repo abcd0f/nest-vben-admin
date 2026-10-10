@@ -1,5 +1,4 @@
 import { BusinessException } from '@app/core';
-import { CrypotService } from '@app/crypot';
 import { paginate, Prisma, PrismaService } from '@app/database';
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto.js';
@@ -64,17 +63,14 @@ function toUniqueViolation(error: unknown, message: string): BusinessException |
  * 约定（与 `prisma/schema.prisma` 的 `User` 模型一一对应）：
  * - **软删除**：`remove()` 只写 `deletedAt`，不物理删除。所有查询都带
  *   `deletedAt: null`，被删数据默认不可见；
- * - **密码单向**：明文只在入参里存在一瞬，落库前经 `CrypotService` 做 scrypt 哈希，
+ * - **密码不脱敏**：本模块不做密码哈希，`password` 按 DTO 原样落库。
  *   出参一律走 `UserResponseDto.from()`，`password` / `deletedAt` 不出接口；
  * - **越界字段不进库**：入参只取 DTO 上声明过的字段，不把 `dto` 直接展开给 Prisma，
  *   否则全局校验管道被绕过（或将来有人关掉 `whitelist`）时会变成批量赋值漏洞。
  */
 @Injectable()
 export class UserService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly crypot: CrypotService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   /** 新增用户。用户名 / 邮箱冲突返回 409。 */
   async create(dto: CreateUserDto): Promise<any> {
@@ -84,13 +80,11 @@ export class UserService {
       await this.assertEmailAvailable(dto.email);
     }
 
-    const password = await this.crypot.hash(dto.password);
-
     try {
       const user = await this.prisma.user.create({
         data: {
           username: dto.username,
-          password,
+          password: dto.password,
           email: dto.email ?? null,
           nickname: dto.nickname ?? null,
         },
@@ -111,12 +105,12 @@ export class UserService {
   async findPage(query: QueryUserDto): Promise<UserPageDto> {
     const where = this.buildWhere(query);
 
-    const result = await paginate(query, ({ skip, take }) =>
-      Promise.all([
+    const result = await paginate(query, ({ skip, take }) => {
+      return Promise.all([
         this.prisma.user.findMany({ where, skip, take, orderBy: { createdAt: 'desc' } }),
         this.prisma.user.count({ where }),
-      ]),
-    );
+      ]);
+    });
 
     return { ...result, list: UserResponseDto.fromList(result.list) };
   }
@@ -133,7 +127,7 @@ export class UserService {
   }
 
   /**
-   * 更新用户。只更新显式传入的字段；`password` 传了才重算哈希。
+   * 更新用户。只更新显式传入的字段；`password` 传了才更新。
    *
    * `null` 的语义按列是否可空区分（对齐 `schema.prisma`）：
    * - `email` / `nickname` 是 `String?`，传 `null` 表示**清空该列**；
@@ -174,7 +168,7 @@ export class UserService {
       data.status = dto.status;
     }
     if (isPresent(dto.password)) {
-      data.password = await this.crypot.hash(dto.password);
+      data.password = dto.password;
     }
 
     try {

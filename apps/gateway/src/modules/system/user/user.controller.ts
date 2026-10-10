@@ -28,7 +28,7 @@ export class UserController {
   /**
    * 新增用户
    *
-   * @remarks 密码在服务端做 scrypt 哈希后落库，明文不持久化。用户名、邮箱全局唯一，
+   * @remarks 密码按原样落库，不做哈希。用户名、邮箱全局唯一，
    * 冲突时返回业务码 409。入参约束见 `CreateUserDto`，违反约束返回 422 + 字段级 `details`。
    */
   @Post()
@@ -62,7 +62,7 @@ export class UserController {
   /**
    * 更新用户
    *
-   * @remarks PATCH 语义：只更新请求体里出现的字段。传了 `password` 会重新哈希；
+   * @remarks PATCH 语义：只更新请求体里出现的字段。传了 `password` 会直接更新密码；
    * 用户名 / 邮箱改动时会重新做唯一性校验，且不会与自身当前值冲突。
    * `email` / `nickname` 可空，传 `null` 表示清空该列；`username` / `status` 是
    * NOT NULL 列，传 `null` 会被忽略（视为未传）。

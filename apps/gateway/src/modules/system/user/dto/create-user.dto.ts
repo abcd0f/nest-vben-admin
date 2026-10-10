@@ -23,7 +23,7 @@ export class CreateUserDto {
   username!: string;
 
   /**
-   * 登录密码，6~64 位。落库前由 CrypotService 做 scrypt 哈希，明文不入库
+   * 登录密码，6~64 位
    * @example P@ssw0rd
    */
   @IsString()
