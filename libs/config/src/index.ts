@@ -1,6 +1,8 @@
 export { appConfig } from './app.config.js';
 export type { AppConfig, NodeEnv } from './app.config.js';
 export * from './config.module.js';
+export { corsConfig } from './cors.config.js';
+export type { CorsConfig, CorsEnv } from './cors.config.js';
 export { databaseConfig } from './database.config.js';
 export type { DatabaseConfig, DatabasePoolConfig } from './database.config.js';
 export { loggerConfig } from './logger.config.js';

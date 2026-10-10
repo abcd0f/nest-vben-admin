@@ -17,7 +17,7 @@ import { UpdateUserDto } from './dto/update-user.dto.js';
  *
  * 这里把 `null` 与 `undefined` 统一视为「未传」，与 `normalizeFilter()` 对空串的
  * 处理保持一致：**本模块的 PATCH 语义是「只改真的传了值的字段」**。
- * 可空列（`email` / `nickname`）是例外——那里 `null` 有明确含义（清空），
+ * 可空列（`email` / `nickName`）是例外——那里 `null` 有明确含义（清空），
  * 见 `update()` 里的分支。
  */
 function isPresent<T>(value: null | T | undefined): value is T {
@@ -86,7 +86,7 @@ export class UserService {
           username: dto.username,
           password: dto.password,
           email: dto.email ?? null,
-          nickname: dto.nickname ?? null,
+          nickName: dto.nickName ?? null,
         },
       });
 
@@ -116,8 +116,8 @@ export class UserService {
   }
 
   /** 查询用户详情，不存在（或已软删除）返回 404。 */
-  async findOne(id: string): Promise<UserResponseDto> {
-    const user = await this.prisma.user.findFirst({ where: { id, deletedAt: null } });
+  async findOne(userId: string): Promise<UserResponseDto> {
+    const user = await this.prisma.user.findFirst({ where: { userId, deletedAt: null } });
 
     if (user === null) {
       throw BusinessException.notFound('用户不存在');
@@ -130,12 +130,12 @@ export class UserService {
    * 更新用户。只更新显式传入的字段；`password` 传了才更新。
    *
    * `null` 的语义按列是否可空区分（对齐 `schema.prisma`）：
-   * - `email` / `nickname` 是 `String?`，传 `null` 表示**清空该列**；
+   * - `email` / `nickName` 是 `String?`，传 `null` 表示**清空该列**；
    * - `username` / `status` / `password` 是 NOT NULL，传 `null` 视为**未传**
    *   （忽略）。它们没有「清空」这个状态，把 `null` 写进 Prisma 只会换来一个 500。
    */
-  async update(id: string, dto: UpdateUserDto): Promise<UserResponseDto> {
-    const current = await this.prisma.user.findFirst({ where: { id, deletedAt: null } });
+  async update(userId: string, dto: UpdateUserDto): Promise<UserResponseDto> {
+    const current = await this.prisma.user.findFirst({ where: { userId, deletedAt: null } });
 
     if (current === null) {
       throw BusinessException.notFound('用户不存在');
@@ -161,8 +161,8 @@ export class UserService {
     if (dto.email !== undefined) {
       data.email = dto.email;
     }
-    if (dto.nickname !== undefined) {
-      data.nickname = dto.nickname;
+    if (dto.nickName !== undefined) {
+      data.nickName = dto.nickName;
     }
     if (isPresent(dto.status)) {
       data.status = dto.status;
@@ -172,7 +172,7 @@ export class UserService {
     }
 
     try {
-      const user = await this.prisma.user.update({ where: { id }, data });
+      const user = await this.prisma.user.update({ where: { userId }, data });
 
       return UserResponseDto.from(user);
     } catch (error) {
@@ -193,14 +193,14 @@ export class UserService {
    * 若要允许复用，应改为「删除时把 username 改写为 `name#<uuid>`」的部分索引方案，
    * 那是一次 schema 变更，不在本次范围。
    */
-  async remove(id: string): Promise<void> {
-    const current = await this.prisma.user.findFirst({ where: { id, deletedAt: null } });
+  async remove(userId: string): Promise<void> {
+    const current = await this.prisma.user.findFirst({ where: { userId, deletedAt: null } });
 
     if (current === null) {
       throw BusinessException.notFound('用户不存在');
     }
 
-    await this.prisma.user.update({ where: { id }, data: { deletedAt: new Date() } });
+    await this.prisma.user.update({ where: { userId }, data: { deletedAt: new Date() } });
   }
 
   /** 组装列表查询条件：软删除过滤 + 模糊匹配 + 状态等值。 */
@@ -209,7 +209,7 @@ export class UserService {
 
     const username = normalizeFilter(query.username);
     const email = normalizeFilter(query.email);
-    const nickname = normalizeFilter(query.nickname);
+    const nickName = normalizeFilter(query.nickName);
 
     if (username !== undefined) {
       // mode: 'insensitive' 让模糊匹配大小写无关（PostgreSQL ILIKE 语义）。
@@ -218,8 +218,8 @@ export class UserService {
     if (email !== undefined) {
       where.email = { contains: email, mode: 'insensitive' };
     }
-    if (nickname !== undefined) {
-      where.nickname = { contains: nickname, mode: 'insensitive' };
+    if (nickName !== undefined) {
+      where.nickName = { contains: nickName, mode: 'insensitive' };
     }
     if (query.status !== undefined) {
       where.status = query.status;
@@ -238,7 +238,7 @@ export class UserService {
   private async assertUsernameAvailable(username: string): Promise<void> {
     const existing = await this.prisma.user.findUnique({
       where: { username },
-      select: { id: true, deletedAt: true },
+      select: { userId: true, deletedAt: true },
     });
 
     if (existing === null) {
@@ -254,7 +254,7 @@ export class UserService {
   private async assertEmailAvailable(email: string): Promise<void> {
     const existing = await this.prisma.user.findUnique({
       where: { email },
-      select: { id: true, deletedAt: true },
+      select: { userId: true, deletedAt: true },
     });
 
     if (existing === null) {

@@ -11,7 +11,7 @@ import { UserStatus } from './response.dto.js';
  * 各列表接口共用，避免出现「A 接口上限 200、B 接口上限 100」这种漂移。
  *
  * 全部筛选条件都是可选的，且**空值按未传处理**：
- * - 字符串条件（username / email / nickname）由 service 的 `buildWhere()` 归一化，
+ * - 字符串条件（username / email / nickName）由 service 的 `buildWhere()` 归一化，
  *   空串会被丢掉，否则 `contains: ''` 会命中全表；
  * - `status` 是数字，归一化必须在 DTO 层做——`Number('') === 0`，
  *   直接 `@Type(() => Number)` 会让「清空筛选」变成「筛选停用用户」，
@@ -43,7 +43,7 @@ export class QueryUserDto extends PageQueryDto {
   @IsOptional()
   @IsString()
   @MaxLength(64)
-  nickname?: string;
+  nickName?: string;
 
   /**
    * 状态：1 正常，0 停用。空串 / 缺省视为「不筛选」

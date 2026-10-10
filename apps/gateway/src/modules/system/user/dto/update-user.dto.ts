@@ -14,7 +14,7 @@ import { UserStatus } from './response.dto.js';
  *
  * 关于 `password`：本 DTO 保留可选的 `password`，`UserService.update()`
  * 会在检测到该字段时直接更新密码。若业务上要求「改密码必须校验旧密码」，
- * 应另开 `PATCH /system/user/:id/password` 端点，不要在这个通用更新接口里
+ * 应另开 `PATCH /system/user/:userId/password` 端点，不要在这个通用更新接口里
  * 掺入旧密码校验——那会让「只改昵称」的请求也被迫携带密码。
  *
  * 关于 `status`：它**不在** `CreateUserDto` 里，因为 `schema.prisma` 的

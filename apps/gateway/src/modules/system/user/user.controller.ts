@@ -15,7 +15,7 @@ import { UserService } from './user.service.js';
  *    `ResponseInterceptor` 包成 `{ code, message, data }`，controller 里不手动拼响应体。
  * 2. **文档零装饰器**。所有 description / example 来自本文件的 JSDoc 与方法签名，
  *    业务代码里不出现任何 `@Api*`。
- * 3. **`id` 用 `ParseUUIDPipe`**。主键是 uuid 而非自增整数，非法格式（如 `/system/user/1`）
+ * 3. **`userId` 用 `ParseUUIDPipe`**。主键是 uuid 而非自增整数，非法格式（如 `/system/user/1`）
  *    必须在进 service 之前就被拦成 400，而不是把 `'1'` 当成合法 uuid 丢给数据库
  *    换回一个 `invalid input syntax for type uuid` 的 500。
  * 4. **错误一律靠抛异常**：`UserService` 抛 `BusinessException`，
@@ -54,9 +54,9 @@ export class UserController {
    *
    * @remarks 返回体不含 `password`、`deletedAt`。目标不存在或已软删除时返回 404。
    */
-  @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<UserResponseDto> {
-    return this.userService.findOne(id);
+  @Get(':userId')
+  findOne(@Param('userId', ParseUUIDPipe) userId: string): Promise<UserResponseDto> {
+    return this.userService.findOne(userId);
   }
 
   /**
@@ -64,12 +64,15 @@ export class UserController {
    *
    * @remarks PATCH 语义：只更新请求体里出现的字段。传了 `password` 会直接更新密码；
    * 用户名 / 邮箱改动时会重新做唯一性校验，且不会与自身当前值冲突。
-   * `email` / `nickname` 可空，传 `null` 表示清空该列；`username` / `status` 是
+   * `email` / `nickName` 可空，传 `null` 表示清空该列；`username` / `status` 是
    * NOT NULL 列，传 `null` 会被忽略（视为未传）。
    */
-  @Patch(':id')
-  update(@Param('id', ParseUUIDPipe) id: string, @Body() updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
-    return this.userService.update(id, updateUserDto);
+  @Patch(':userId')
+  update(
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<UserResponseDto> {
+    return this.userService.update(userId, updateUserDto);
   }
 
   /**
@@ -78,8 +81,8 @@ export class UserController {
    * @remarks 只写 `deletedAt`，数据行保留以便追溯与恢复；重复删除返回 404。
    * 注意：被删除的用户名 / 邮箱仍占用唯一索引，重建同名用户会被拒绝。
    */
-  @Delete(':id')
-  remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
-    return this.userService.remove(id);
+  @Delete(':userId')
+  remove(@Param('userId', ParseUUIDPipe) userId: string): Promise<void> {
+    return this.userService.remove(userId);
   }
 }

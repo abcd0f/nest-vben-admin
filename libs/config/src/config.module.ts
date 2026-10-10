@@ -3,6 +3,7 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigModule as NestConfigModule } from '@nestjs/config';
 
 import { appConfig } from './app.config.js';
+import { corsConfig } from './cors.config.js';
 import { databaseConfig } from './database.config.js';
 import { validateEnv } from './env.validation.js';
 import { loggerConfig } from './logger.config.js';
@@ -43,7 +44,7 @@ export class AppConfigModule {
           // 越具体越优先（@nestjs/config 中数组靠前的文件覆盖靠后的）
           envFilePath: [`.env.${nodeEnv}.local`, `.env.${nodeEnv}`, '.env.local', '.env'],
           validate: validateEnv,
-          load: [appConfig, databaseConfig, loggerConfig, swaggerConfig],
+          load: [appConfig, corsConfig, databaseConfig, loggerConfig, swaggerConfig],
         }),
       ],
       exports: [NestConfigModule],

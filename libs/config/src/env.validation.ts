@@ -1,16 +1,24 @@
 import type { AppEnv } from './app.config.js';
+import type { CorsEnv } from './cors.config.js';
 import type { DatabaseEnv } from './database.config.js';
 import type { EnvSource } from './env.utils.js';
 import type { LoggerEnv } from './logger.config.js';
 import type { SwaggerEnv } from './swagger.config.js';
 import { parseAppEnv } from './app.config.js';
+import { parseCorsEnv } from './cors.config.js';
 import { parseDatabaseEnv } from './database.config.js';
 import { parseLoggerEnv } from './logger.config.js';
 import { parseSwaggerEnv } from './swagger.config.js';
 
-export type Env = AppEnv & DatabaseEnv & LoggerEnv & SwaggerEnv;
+export type Env = AppEnv & CorsEnv & DatabaseEnv & LoggerEnv & SwaggerEnv;
 
-const parsers: Array<(raw: EnvSource) => object> = [parseAppEnv, parseDatabaseEnv, parseLoggerEnv, parseSwaggerEnv];
+const parsers: Array<(raw: EnvSource) => object> = [
+  parseAppEnv,
+  parseCorsEnv,
+  parseDatabaseEnv,
+  parseLoggerEnv,
+  parseSwaggerEnv,
+];
 
 export function validateEnv(raw: EnvSource): Env {
   const parsed: object[] = [];

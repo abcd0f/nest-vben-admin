@@ -46,5 +46,5 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   @MaxLength(64, { message: '昵称长度不能超过 64 位' })
-  nickname?: string;
+  nickName?: string;
 }

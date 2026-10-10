@@ -48,7 +48,7 @@ const RESPONSE_TRANSFORM_OPTIONS = { excludeExtraneousValues: true } as const;
 export class UserResponseDto {
   /** 用户 ID */
   @Expose()
-  id!: string;
+  userId!: string;
 
   /** 用户名 */
   @Expose()
@@ -66,7 +66,7 @@ export class UserResponseDto {
    * @example 管理员
    */
   @Expose()
-  nickname!: null | string;
+  nickName!: null | string;
 
   /**
    * 状态：1 正常，0 停用
