@@ -1,12 +1,13 @@
-import { config as loadEnv } from 'dotenv';
-import { defineConfig, env } from 'prisma/config';
+import { defineConfig } from 'prisma/config';
+import { loadConfigSource } from './libs/config/src/core/source/index.js';
 
-const nodeEnv = process.env.NODE_ENV ?? 'development';
+// Prisma CLI（migrate / db push / studio）不走 Nest 的 DI，这里直接读同一份
+// config/*.yaml，避免连接串出现第二处来源。
+const source = loadConfigSource();
+const url = source.read({ namespace: 'database', field: 'url', path: ['database', 'url'] });
 
-// 与 apps/gateway/src/app.module.ts 里 ConfigModule 的 envFilePath 保持同一套顺序：
-// 越具体越优先（override=false → 先加载者生效）。
-for (const path of [`.env.${nodeEnv}.local`, `.env.${nodeEnv}`, '.env.local', '.env']) {
-  loadEnv({ path, override: false });
+if (typeof url !== 'string' || url.length === 0) {
+  throw new Error('database.url 未配置：请检查 config/default.yaml 与 config/<env>.local.yaml');
 }
 
 export default defineConfig({
@@ -15,7 +16,7 @@ export default defineConfig({
     path: 'prisma/migrations',
   },
   datasource: {
-    // Prisma CLI（migrate / db push / studio）用这个连接串，运行时用的是驱动适配器里的连接串。
-    url: env('DATABASE_URL'),
+    // Prisma CLI 用这个连接串；运行时用的是驱动适配器里的连接串（同一个来源）
+    url,
   },
 });

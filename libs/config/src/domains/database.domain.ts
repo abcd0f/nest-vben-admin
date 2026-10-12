@@ -28,13 +28,16 @@ function resolveSchema(url: string): string {
   }
 }
 
+/**
+ * 数据库域。连接池参数嵌在 `database.pool.*` 下，与最终 Config 的形状一致。
+ */
 export const databaseDomain = defineConfigDomain({
   namespace: 'database',
   fields: {
     url: { type: 'string', minLength: 1 },
-    poolMax: { type: 'integer', default: 10, min: 1 },
-    poolIdleTimeout: { type: 'integer', default: 10_000, min: 0 },
-    connectTimeout: { type: 'integer', default: 5_000, min: 0 },
+    poolMax: { type: 'integer', default: 10, min: 1, key: 'pool.max' },
+    poolIdleTimeout: { type: 'integer', default: 10_000, min: 0, key: 'pool.idleTimeout' },
+    poolConnectTimeout: { type: 'integer', default: 5_000, min: 0, key: 'pool.connectTimeout' },
     logQueries: { type: 'boolean', default: false },
   },
   resolve: (values): DatabaseConfig => ({
@@ -43,7 +46,7 @@ export const databaseDomain = defineConfigDomain({
     pool: {
       max: values.poolMax,
       idleTimeoutMillis: values.poolIdleTimeout,
-      connectionTimeoutMillis: values.connectTimeout,
+      connectionTimeoutMillis: values.poolConnectTimeout,
     },
     logQueries: values.logQueries,
   }),

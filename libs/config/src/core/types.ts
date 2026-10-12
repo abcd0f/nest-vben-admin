@@ -1,6 +1,11 @@
 import type { ConfigFactory, ConfigFactoryKeyHost, ConfigObject } from '@nestjs/config';
 
-/** 配置源里的原始值。env 源只会给字符串；YAML 源可能给 string / number / boolean。 */
+/** 允许的环境名。新增环境时在这里加一项，并补一份 `config/<name>.yaml`。 */
+export const ENVIRONMENTS = ['development', 'test', 'production'] as const;
+
+export type Environment = (typeof ENVIRONMENTS)[number];
+
+/** 配置源里的原始值。YAML 源会给 string / number / boolean / 数组等原生类型。 */
 export type ConfigSourceValue = unknown;
 
 /** 一个字段在配置源里的定位信息。 */
@@ -9,25 +14,29 @@ export interface FieldLocator {
   readonly namespace: string;
   /** 域内字段名，如 `maxAge` */
   readonly field: string;
-  /** env 源下的变量名，如 `CORS_MAX_AGE` */
-  readonly envKey: string;
+  /** 在配置源中的键路径（已按源的命名风格转换），如 `['database', 'pool', 'max']` */
+  readonly path: readonly string[];
 }
 
 /**
  * 配置源抽象 —— 数据「从哪来」的唯一出口。
  *
- * 换源（env → YAML / 远程配置中心）只需另写一个实现，所有域定义零改动。
+ * 当前实现是 YAML 分层文件（见 `source/yaml-source.ts`）；
+ * 换成远程配置中心只需另写一个实现，所有域定义零改动。
  */
 export interface ConfigSource {
   /** 当前环境名：development / test / production */
-  readonly environment: string;
+  readonly environment: Environment;
   read: (locator: FieldLocator) => ConfigSourceValue;
 }
 
 /** 各字段类型共有的声明。 */
 interface CommonFieldSpec {
-  /** 覆盖自动推导的 env 变量名。默认 `${envPrefix}${SCREAMING_SNAKE(field)}` */
-  readonly env?: string;
+  /**
+   * 覆盖自动推导的键路径。写点分隔的 camelCase，逐段转 kebab-case。
+   * 默认取字段名本身；需要嵌进子对象时显式给，如 `key: 'pool.idleTimeout'` → `pool.idle-timeout`。
+   */
+  readonly key?: string;
 }
 
 export interface StringFieldSpec extends CommonFieldSpec {
@@ -49,7 +58,9 @@ export interface IntegerFieldSpec extends CommonFieldSpec {
 
 export interface BooleanFieldSpec extends CommonFieldSpec {
   readonly type: 'boolean';
-  readonly default: boolean;
+  readonly default?: boolean;
+  /** 声明后：缺失返回 undefined（用于「不写 = 自动」这类三态开关） */
+  readonly optional?: true;
 }
 
 export interface EnumFieldSpec<TValues extends readonly string[] = readonly string[]> extends CommonFieldSpec {
@@ -59,19 +70,19 @@ export interface EnumFieldSpec<TValues extends readonly string[] = readonly stri
   readonly optional?: true;
 }
 
-export interface CsvFieldSpec extends CommonFieldSpec {
-  readonly type: 'csv';
-  /** 逗号分隔的默认值 */
-  readonly default?: string;
-  /** 声明后：缺失或空白都返回 undefined */
+export interface ListFieldSpec extends CommonFieldSpec {
+  readonly type: 'list';
+  /** 数组形式的默认值；配置里也可以写逗号分隔字符串，两者都接受 */
+  readonly default?: readonly string[];
+  /** 声明后：缺失或空列表都返回 undefined */
   readonly optional?: true;
 }
 
 export type FieldSpec =
   | BooleanFieldSpec
-  | CsvFieldSpec
   | EnumFieldSpec
   | IntegerFieldSpec
+  | ListFieldSpec
   | StringFieldSpec;
 
 export type FieldSpecs = Record<string, FieldSpec>;
@@ -84,8 +95,10 @@ type FieldValue<TSpec extends FieldSpec> = TSpec extends { readonly type: 'strin
   : TSpec extends { readonly type: 'integer' }
     ? number
     : TSpec extends { readonly type: 'boolean' }
-      ? boolean
-      : TSpec extends { readonly type: 'csv' }
+      ? TSpec extends { readonly optional: true }
+        ? boolean | undefined
+        : boolean
+      : TSpec extends { readonly type: 'list' }
         ? TSpec extends { readonly optional: true }
           ? string[] | undefined
           : string[]
@@ -101,15 +114,13 @@ export type DomainValues<TSpecs extends FieldSpecs> = { [K in keyof TSpecs]: Fie
 /** 传给 resolve 的上下文 */
 export interface ResolveContext {
   /** 当前环境名，供「按环境给不同默认值」这类逻辑使用 */
-  readonly environment: string;
+  readonly environment: Environment;
 }
 
 /** 域的声明式定义 —— 一个域的全部信息都写在这里。 */
 export interface DomainDefinition<TSpecs extends FieldSpecs, TConfig extends ConfigObject> {
-  /** 命名空间：既是 registerAs 的 token，也是 `configService.get('<namespace>.x')` 的前缀 */
+  /** 命名空间：既是 registerAs 的 token，也是配置文件中该域的根键 */
   readonly namespace: string;
-  /** env 变量名前缀。默认 `${NAMESPACE}_`；传空串表示无前缀（如 app 域直读 PORT） */
-  readonly envPrefix?: string;
   /** 字段声明：一处写清键名、类型、默认值、校验范围 */
   readonly fields: TSpecs;
   /** 可选派生：把字段值组装成最终配置对象；跨字段校验也在这里抛错 */
@@ -129,8 +140,8 @@ export interface ConfigDomain<
 > extends DomainDefinition<TSpecs, TConfig> {
   /** registerAs 产物：`@Inject(xxxConfig.KEY)` 与 ConfigModule 的 load 都用它 */
   readonly token: ConfigFactory<TConfig> & ConfigFactoryKeyHost<TConfig>;
-  /** 字段 → env 变量名映射，便于排查「这个值到底读的哪个变量」 */
-  readonly envKeys: Readonly<Record<string, string>>;
+  /** 字段 → 配置键路径映射，便于排查「这个值到底读的哪一行」 */
+  readonly keys: Readonly<Record<string, string>>;
   /** 解析该域。不抛异常，错误以列表返回，便于跨域聚合后一次性报出 */
   parse: (source: ConfigSource) => DomainParseResult<TConfig>;
 }

@@ -35,10 +35,12 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# dotenv environment variable files（模板 .env.example 需要提交）
+# 配置：config/default.yaml 与 config/<env>.yaml 入库，本机/密钥层不入库
+config/*.local.yaml
+
+# 历史遗留：项目已改用 config/*.yaml，以下规则只为拦住残留的 .env 文件误提交
 .env
 .env.*
-!.env.example
 
 # Prisma 生成物（由 prisma generate 产出，不入库）
 /libs/database/src/generated

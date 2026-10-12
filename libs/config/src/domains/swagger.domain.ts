@@ -21,9 +21,8 @@ function trimSlashes(value: string): string {
 export const swaggerDomain = defineConfigDomain({
   namespace: 'swagger',
   fields: {
-    // 刻意不做「空字符串 = 自动」：不声明该变量才是自动。
-    // 要显式控制就写 true / false，写空串属于配置错误，直接报出来。
-    enabled: { type: 'enum', values: ['true', 'false'], optional: true },
+    // 不写 enabled = 自动：非生产环境开启、生产环境关闭
+    enabled: { type: 'boolean', optional: true },
     path: { type: 'string', default: 'docs', minLength: 1 },
     title: { type: 'string', default: 'Nest Vben Admin API', minLength: 1 },
     description: { type: 'string', default: '', minLength: 0 },
@@ -33,8 +32,8 @@ export const swaggerDomain = defineConfigDomain({
     const path = trimSlashes(values.path);
 
     return {
-      // 不声明 SWAGGER_ENABLED = 非生产环境开启、生产环境关闭
-      enabled: values.enabled === undefined ? context.environment !== 'production' : values.enabled === 'true',
+      // 不写 enabled = 自动：非生产环境开启、生产环境关闭
+      enabled: values.enabled ?? context.environment !== 'production',
       path,
       jsonPath: `${path}/json`,
       yamlPath: `${path}/yaml`,

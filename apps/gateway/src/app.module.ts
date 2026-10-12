@@ -1,4 +1,3 @@
-import { AuthModule } from '@app/auth';
 import { CacheModule } from '@app/cache';
 import { AppConfigModule } from '@app/config';
 import { CoreModule } from '@app/core';
@@ -27,7 +26,6 @@ import { UserModule } from './modules/system/user/user.module.js';
     CacheModule.forRoot(),
     // 接口文档（注释驱动）。挂载动作在 main.ts 的 setupSwagger()，不在模块里。
     AppSwaggerModule.forRoot(),
-    AuthModule,
     UserModule,
   ],
   controllers: [AppController],

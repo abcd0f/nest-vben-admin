@@ -1,0 +1,19 @@
+# ============================================================
+# 开发环境差异层（入库）。只写与 default.yaml 不同的项。
+# ============================================================
+
+app:
+  # HTTP 服务端口
+  port: 6688
+
+database:
+  # 开发期打印 SQL，方便排查
+  log-queries: true
+  url: postgresql://root:123456@localhost:5432/nest-admin?schema=public
+
+logger:
+  level: debug
+
+cors:
+  # 本地前端直连，关掉跨域校验更方便排查
+  enabled: false

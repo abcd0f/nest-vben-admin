@@ -1,0 +1,100 @@
+# ============================================================
+# 配置基线层 —— 所有环境共享，入库。
+#
+# 加载顺序（后者深合并覆盖前者）：
+#   1. config/default.yaml          ← 本文件
+#   2. config/<env>.yaml            ← env 取自 NODE_ENV（由启动脚本用 cross-env 注入）
+#   3. config/<env>.local.yaml      ← 本机 / 密钥层，已 gitignore
+#
+# 约定：
+#   - 键名全小写 kebab-case，层级与最终 Config 对象一致
+#   - 本文件禁止写入真实凭据；连接串 / 密码放 config/<env>.local.yaml
+#   - 不用的项直接删掉或注释，缺失时走代码里的默认值
+# ============================================================
+
+app:
+  # HTTP 服务端口
+  port: 3000
+
+database:
+  # 占位连接串。真实值必须由 config/<env>.local.yaml 覆盖 —— 没有它会连不上，
+  # 且启动时不会报配置错误（结构是合法的），请务必确认本地文件已建好。
+  url: postgresql://USER:PASSWORD@localhost:5432/DATABASE?schema=public
+  pool:
+    # 单实例最大连接数。总连接数 = 实例数 × max，不要超过 PostgreSQL 的 max_connections
+    max: 10
+    # 空闲连接回收时间（毫秒）
+    idle-timeout: 10000
+    # 建立连接超时（毫秒）
+    connect-timeout: 5000
+  # 是否打印 SQL 日志。生产环境务必保持 false
+  log-queries: false
+
+logger:
+  # fatal | error | warn | info | debug | trace | silent
+  level: info
+  file:
+    # 是否写入 logs/app-YYYY-MM-DD.log（全量）与 logs/error-YYYY-MM-DD.log（仅 error 及以上）
+    enabled: true
+    # 日志文件目录
+    dir: logs
+  # 追加脱敏路径。默认已覆盖 authorization / cookie / password / token
+  # redact:
+  #   - req.headers["x-custom-secret"]
+  #   - "*.idCard"
+
+redis:
+  # 默认关闭：不建立任何连接，也不要求 url。
+  # 开启后调用缓存会抛出明确的「未启用」错误，不会静默降级成永远 miss。
+  enabled: false
+  # 启用时必填。带密码：redis://:PASSWORD@host:6379/0；TLS：rediss://host:6379/0
+  # url: redis://127.0.0.1:6379/0
+  # 键前缀。多个应用 / 多套环境共用同一个 Redis 实例时靠它隔离命名空间
+  key-prefix: cache
+  # 建立连接超时（毫秒）
+  connect-timeout: 5000
+  # 单条命令超时（毫秒）。0 = 不限制
+  command-timeout: 5000
+  # 断线后单条命令的最大重试次数，超过即快速失败，避免请求堆积
+  max-retries-per-request: 3
+  # 独立密码（可选）。连接串里已含密码时无需重复设置
+  # password: ""
+
+cors:
+  # 是否启用。要关就写 false（关掉后 main.ts 完全不注册 @fastify/cors）
+  enabled: true
+  # "*" 放行所有来源；也可写成数组做白名单（精确匹配）：
+  #   origin:
+  #     - http://localhost:5173
+  #     - https://admin.example.com
+  origin: "*"
+  # 是否允许携带凭据（Cookie / Authorization）。为 true 时 origin 不能是 "*"
+  credentials: false
+  # 必须显式列出：@fastify/cors 默认只有 GET,HEAD,POST，会让 PUT/PATCH/DELETE 预检被拒
+  methods:
+    - GET
+    - HEAD
+    - PUT
+    - PATCH
+    - POST
+    - DELETE
+    - OPTIONS
+  # 不写 = 反射浏览器实际请求的头（推荐留空）
+  # allowed-headers:
+  #   - Content-Type
+  #   - Authorization
+  # 不写 = 不额外暴露响应头
+  # exposed-headers:
+  #   - X-Request-Id
+  # 预检（OPTIONS）结果缓存秒数，0 = 不缓存
+  max-age: 86400
+
+swagger:
+  # 不写 enabled = 非生产环境开启、生产环境关闭
+  # enabled: true
+  # 挂载路径（不含前后斜杠），最终地址为 /<path>，JSON 在 /<path>/json
+  path: docs
+  title: Nest Vben Admin API
+  # 支持 Markdown
+  description: ""
+  version: 1.0.0

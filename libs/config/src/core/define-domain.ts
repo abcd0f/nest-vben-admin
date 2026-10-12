@@ -10,26 +10,25 @@ import type {
 } from './types.js';
 import { registerAs } from '@nestjs/config';
 import { parseField } from './fields.js';
-import { createEnvSource } from './source/env-source.js';
+import { configSource } from './source/index.js';
 
 const CAMEL_BOUNDARY = /([a-z0-9])([A-Z])/g;
 
-/** `maxAge` → `MAX_AGE`，`poolIdleTimeout` → `POOL_IDLE_TIMEOUT` */
-export function toScreamingSnake(name: string): string {
-  return name.replace(CAMEL_BOUNDARY, '$1_$2').toUpperCase();
+/** `maxAge` → `max-age`；`poolIdleTimeout` → `pool-idle-timeout` */
+export function toKebabCase(name: string): string {
+  return name.replace(CAMEL_BOUNDARY, '$1-$2').toLowerCase();
 }
 
-/** 推导字段对应的 env 变量名：显式 `env` 优先，否则 `前缀 + SCREAMING_SNAKE(字段名)` */
-function resolveEnvKey(namespace: string, field: string, spec: FieldSpec, envPrefix: string | undefined): string {
-  if (spec.env !== undefined) return spec.env;
-  return `${envPrefix ?? `${namespace.toUpperCase()}_`}${toScreamingSnake(field)}`;
+/** 推导字段的键路径：`(namespace, 'poolIdleTimeout', { key: 'pool.idleTimeout' })` → `['database', 'pool', 'idle-timeout']` */
+function resolveKeyPath(namespace: string, field: string, spec: FieldSpec): string[] {
+  return [namespace, ...(spec.key ?? field).split('.').map(toKebabCase)];
 }
 
 /**
  * 定义一个配置域。
  *
- * 一个域只需要在这里声明三件事：命名空间、字段、以及可选的派生逻辑。
- * 校验、注册、类型推导全部由本函数产出，不再需要维护额外的清单文件。
+ * 一个域只需要声明三件事：命名空间、字段、以及可选的派生逻辑。
+ * 键路径推导、校验、注册、类型推导全部由本函数产出，不再需要维护额外的清单文件。
  *
  * @example
  * ```ts
@@ -38,10 +37,17 @@ function resolveEnvKey(namespace: string, field: string, spec: FieldSpec, envPre
  *   fields: {
  *     enabled: { type: 'boolean', default: false },
  *     path: { type: 'string', default: 'metrics', minLength: 1 },
+ *     buckets: { type: 'list', default: ['p50', 'p90', 'p99'] },
  *   },
- *   resolve: (values) => ({ enabled: values.enabled, path: values.path.replace(/^\/+|\/+$/g, '') }),
  * });
  * export const metricsConfig = metricsDomain.token;
+ * ```
+ * 对应 `config/default.yaml`：
+ * ```yaml
+ * metrics:
+ *   enabled: false
+ *   path: metrics
+ *   buckets: [p50, p90, p99]
  * ```
  */
 export function defineConfigDomain<
@@ -49,20 +55,22 @@ export function defineConfigDomain<
   TConfig extends ConfigObject = DomainValues<TSpecs>,
 >(definition: DomainDefinition<TSpecs, TConfig>): ConfigDomain<TSpecs, TConfig> {
   const fields: FieldSpecs = definition.fields;
-  const envKeys: Record<string, string> = {};
+  const keys: Record<string, string> = {};
+  const paths: Record<string, string[]> = {};
 
   for (const field of Object.keys(fields)) {
-    envKeys[field] = resolveEnvKey(definition.namespace, field, fields[field], definition.envPrefix);
+    const path = resolveKeyPath(definition.namespace, field, fields[field]);
+    paths[field] = path;
+    keys[field] = path.join('.');
   }
 
-  function parse(source: ConfigSource): DomainParseResult<TConfig> {
+  function parseUncached(source: ConfigSource): DomainParseResult<TConfig> {
     const errors: string[] = [];
     const values: Record<string, unknown> = {};
 
     for (const [field, spec] of Object.entries(fields)) {
-      const envKey = envKeys[field];
       try {
-        values[field] = parseField(envKey, spec, source.read({ namespace: definition.namespace, field, envKey }));
+        values[field] = parseField(keys[field], spec, source.read({ namespace: definition.namespace, field, path: paths[field] }));
       } catch (error) {
         errors.push(error instanceof Error ? error.message : String(error));
       }
@@ -81,9 +89,21 @@ export function defineConfigDomain<
     }
   }
 
-  // registerAs 工厂在 DI 阶段执行：此时 @nestjs/config 已把 env 文件写回 process.env。
+  // 同一个配置源只解析一次：启动校验与 registerAs 工厂共享结果，不做重复解析。
+  let memoSource: ConfigSource | undefined;
+  let memoResult: DomainParseResult<TConfig> | undefined;
+
+  function parse(source: ConfigSource): DomainParseResult<TConfig> {
+    if (source === memoSource && memoResult !== undefined) return memoResult;
+
+    const result = parseUncached(source);
+    memoSource = source;
+    memoResult = result;
+    return result;
+  }
+
   const token = registerAs(definition.namespace, () => {
-    const { config, errors } = parse(createEnvSource(process.env));
+    const { config, errors } = parse(configSource());
     if (errors.length > 0) {
       throw new Error(
         `配置域 ${definition.namespace} 解析失败：\n${errors.map((error) => `  - ${error}`).join('\n')}`,
@@ -92,5 +112,5 @@ export function defineConfigDomain<
     return config as TConfig;
   });
 
-  return { ...definition, token, envKeys, parse };
+  return { ...definition, token, keys, parse };
 }

@@ -1,5 +1,7 @@
-export { defineConfigDomain, toScreamingSnake } from './define-domain.js';
-export { splitCsv } from './fields.js';
+export { defineConfigDomain, toKebabCase } from './define-domain.js';
+export { configSource, loadConfigSource, resetConfigSource, resolveEnvironment } from './source/index.js';
+export { createYamlSource } from './source/yaml-source.js';
+export { ENVIRONMENTS } from './types.js';
 export type {
   AnyConfigDomain,
   ConfigDomain,
@@ -8,6 +10,7 @@ export type {
   DomainDefinition,
   DomainParseResult,
   DomainValues,
+  Environment,
   FieldLocator,
   FieldSpec,
   FieldSpecs,

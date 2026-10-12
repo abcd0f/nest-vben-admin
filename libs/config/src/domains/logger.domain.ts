@@ -12,7 +12,7 @@ export interface LoggerFileConfig {
 export interface LoggerConfig {
   level: LogLevelName;
   file: LoggerFileConfig;
-  /** 需要脱敏的字段路径 = 默认项 + LOG_REDACT 追加项 */
+  /** 需要脱敏的字段路径 = 默认项 + logger.redact 追加项 */
   redact: string[];
 }
 
@@ -34,22 +34,19 @@ const DEFAULT_REDACT_PATHS = [
 ];
 
 /**
- * 日志域。
- *
- * `envPrefix: 'LOG_'` —— 命名空间叫 `logger`，但变量名是 `LOG_*`，故显式覆盖前缀。
+ * 日志域。文件开关与目录嵌在 `logger.file.*` 下，与最终 Config 的形状一致。
  */
 export const loggerDomain = defineConfigDomain({
   namespace: 'logger',
-  envPrefix: 'LOG_',
   fields: {
     level: { type: 'enum', values: LOG_LEVELS, default: 'info' },
-    file: { type: 'boolean', default: true },
-    dir: { type: 'string', default: 'logs', minLength: 1 },
-    redact: { type: 'csv', optional: true },
+    fileEnabled: { type: 'boolean', default: true, key: 'file.enabled' },
+    fileDir: { type: 'string', default: 'logs', minLength: 1, key: 'file.dir' },
+    redact: { type: 'list', optional: true },
   },
   resolve: (values): LoggerConfig => ({
     level: values.level,
-    file: { enabled: values.file, dir: values.dir },
+    file: { enabled: values.fileEnabled, dir: values.fileDir },
     redact: [...DEFAULT_REDACT_PATHS, ...(values.redact ?? [])],
   }),
 });
