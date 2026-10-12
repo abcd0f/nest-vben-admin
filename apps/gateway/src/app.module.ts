@@ -7,7 +7,7 @@ import { AppSwaggerModule } from '@app/swagger';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller.js';
 
-import { UserModule } from './modules/system/user/user.module.js';
+import { SystemModule } from './modules/system/system.module.js';
 
 @Module({
   imports: [
@@ -26,7 +26,7 @@ import { UserModule } from './modules/system/user/user.module.js';
     CacheModule.forRoot(),
     // 接口文档（注释驱动）。挂载动作在 main.ts 的 setupSwagger()，不在模块里。
     AppSwaggerModule.forRoot(),
-    UserModule,
+    SystemModule,
   ],
   controllers: [AppController],
   providers: [],
