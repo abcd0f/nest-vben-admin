@@ -1,0 +1,34 @@
+import { appConfig, appDomain } from './app.domain.js';
+import { corsConfig, corsDomain } from './cors.domain.js';
+import { databaseConfig, databaseDomain } from './database.domain.js';
+import { loggerConfig, loggerDomain } from './logger.domain.js';
+import { redisConfig, redisDomain } from './redis.domain.js';
+import { swaggerConfig, swaggerDomain } from './swagger.domain.js';
+
+/**
+ * 域注册表 —— 新增配置域时唯一需要改动的清单。
+ *
+ * 启动校验的顺序、registerAs 的注册顺序都从这里派生，
+ * 不存在「加了校验忘了注册」这类漏改（旧版就是漏改 load[] 才会编译通过、启动才崩）。
+ *
+ * 新增一个域：
+ *   1. 新建 `domains/<name>.domain.ts`，用 defineConfigDomain 声明字段
+ *   2. 在下方 imports 加一行、DOMAINS 数组加一项、文件末尾补类型导出
+ */
+export const DOMAINS = [
+  appDomain,
+  corsDomain,
+  databaseDomain,
+  loggerDomain,
+  redisDomain,
+  swaggerDomain,
+] as const;
+
+export { appConfig, corsConfig, databaseConfig, loggerConfig, redisConfig, swaggerConfig };
+
+export type { AppConfig, NodeEnv } from './app.domain.js';
+export type { CorsConfig } from './cors.domain.js';
+export type { DatabaseConfig, DatabasePoolConfig } from './database.domain.js';
+export type { LoggerConfig, LoggerFileConfig, LogLevelName } from './logger.domain.js';
+export type { RedisConfig } from './redis.domain.js';
+export type { SwaggerConfig } from './swagger.domain.js';
