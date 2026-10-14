@@ -1,7 +1,6 @@
-import { defineConfigDomain } from '../core/index.js';
+import { asBoolean, asEnum, asObject, asOptionalList, asString, defineConfigDomain } from '../core/index.js';
 
 const LOG_LEVELS = ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'] as const;
-
 export type LogLevelName = (typeof LOG_LEVELS)[number];
 
 export interface LoggerFileConfig {
@@ -12,7 +11,6 @@ export interface LoggerFileConfig {
 export interface LoggerConfig {
   level: LogLevelName;
   file: LoggerFileConfig;
-  /** 需要脱敏的字段路径 = 默认项 + logger.redact 追加项 */
   redact: string[];
 }
 
@@ -33,22 +31,20 @@ const DEFAULT_REDACT_PATHS = [
   '*.apiKey',
 ];
 
-/**
- * 日志域。文件开关与目录嵌在 `logger.file.*` 下，与最终 Config 的形状一致。
- */
-export const loggerDomain = defineConfigDomain({
+export const loggerDomain = defineConfigDomain<LoggerConfig>({
   namespace: 'logger',
-  fields: {
-    level: { type: 'enum', values: LOG_LEVELS, default: 'info' },
-    fileEnabled: { type: 'boolean', default: true, key: 'file.enabled' },
-    fileDir: { type: 'string', default: 'logs', minLength: 1, key: 'file.dir' },
-    redact: { type: 'list', optional: true },
+  parse(raw): LoggerConfig {
+    const value = asObject(raw, 'logger');
+    const file = asObject(value.file, 'logger.file');
+    return {
+      level: asEnum(value.level, 'logger.level', LOG_LEVELS, 'info'),
+      file: {
+        enabled: asBoolean(file.enabled, 'logger.file.enabled', true),
+        dir: asString(file.dir, 'logger.file.dir', 'logs'),
+      },
+      redact: [...DEFAULT_REDACT_PATHS, ...(asOptionalList(value.redact, 'logger.redact') ?? [])],
+    };
   },
-  resolve: (values): LoggerConfig => ({
-    level: values.level,
-    file: { enabled: values.fileEnabled, dir: values.fileDir },
-    redact: [...DEFAULT_REDACT_PATHS, ...(values.redact ?? [])],
-  }),
 });
 
 export const loggerConfig = loggerDomain.token;

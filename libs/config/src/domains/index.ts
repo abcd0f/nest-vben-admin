@@ -12,7 +12,7 @@ import { swaggerConfig, swaggerDomain } from './swagger.domain.js';
  * 不存在「加了校验忘了注册」这类漏改（旧版就是漏改 load[] 才会编译通过、启动才崩）。
  *
  * 新增一个域：
- *   1. 新建 `domains/<name>.domain.ts`，用 defineConfigDomain 声明字段
+ *   1. 新建 `domains/<name>.domain.ts`，用 defineConfigDomain 实现 parse/validate
  *   2. 在下方 imports 加一行、DOMAINS 数组加一项、文件末尾补类型导出
  */
 export const DOMAINS = [
