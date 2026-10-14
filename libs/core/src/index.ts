@@ -8,7 +8,7 @@
  * - `filters/`     全局异常过滤器（`AllExceptionsFilter`）
  * - `interceptors/`统一响应包装拦截器（`ResponseInterceptor`）
  * - `pipes/`       全局参数校验管道（`AppValidationPipe`）
- * - `decorators/`  `@RawResponse()`：跳过统一响应包装
+ * - `decorators/`  `@RawResponse()`（跳过统一响应包装）、`@DateFormat()`（日期格式化）
  *
  * 接入方式（app.module.ts）：
  *   imports: [AppConfigModule.forRoot(), AppLoggerModule.forRoot(), CoreModule.forRoot(), ...]
