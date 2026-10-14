@@ -55,7 +55,7 @@ export class UserController {
    * @remarks 返回体不含 `password`、`deletedAt`。目标不存在或已软删除时返回 404。
    */
   @Get(':userId')
-  findOne(@Param('userId', ParseUUIDPipe) userId: string): Promise<UserResponseDto> {
+  findOne(@Param('userId', ParseUUIDPipe) userId: number): Promise<UserResponseDto> {
     return this.userService.findOne(userId);
   }
 
@@ -69,7 +69,7 @@ export class UserController {
    */
   @Patch(':userId')
   update(
-    @Param('userId', ParseUUIDPipe) userId: string,
+    @Param('userId', ParseUUIDPipe) userId: number,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UserResponseDto> {
     return this.userService.update(userId, updateUserDto);
@@ -82,7 +82,7 @@ export class UserController {
    * 注意：被删除的用户名 / 邮箱仍占用唯一索引，重建同名用户会被拒绝。
    */
   @Delete(':userId')
-  remove(@Param('userId', ParseUUIDPipe) userId: string): Promise<void> {
+  remove(@Param('userId', ParseUUIDPipe) userId: number): Promise<void> {
     return this.userService.remove(userId);
   }
 }

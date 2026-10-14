@@ -116,7 +116,7 @@ export class UserService {
   }
 
   /** 查询用户详情，不存在（或已软删除）返回 404。 */
-  async findOne(userId: string): Promise<UserResponseDto> {
+  async findOne(userId: number): Promise<UserResponseDto> {
     const user = await this.prisma.user.findFirst({ where: { userId, deletedAt: null } });
 
     if (user === null) {
@@ -134,7 +134,7 @@ export class UserService {
    * - `username` / `status` / `password` 是 NOT NULL，传 `null` 视为**未传**
    *   （忽略）。它们没有「清空」这个状态，把 `null` 写进 Prisma 只会换来一个 500。
    */
-  async update(userId: string, dto: UpdateUserDto): Promise<UserResponseDto> {
+  async update(userId: number, dto: UpdateUserDto): Promise<UserResponseDto> {
     const current = await this.prisma.user.findFirst({ where: { userId, deletedAt: null } });
 
     if (current === null) {
@@ -193,7 +193,7 @@ export class UserService {
    * 若要允许复用，应改为「删除时把 username 改写为 `name#<uuid>`」的部分索引方案，
    * 那是一次 schema 变更，不在本次范围。
    */
-  async remove(userId: string): Promise<void> {
+  async remove(userId: number): Promise<void> {
     const current = await this.prisma.user.findFirst({ where: { userId, deletedAt: null } });
 
     if (current === null) {
