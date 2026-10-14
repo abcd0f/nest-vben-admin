@@ -62,7 +62,7 @@ export class PageMetaDto {
    * 页码
    */
   @Expose()
-  @IsEnum(SortOrder)
+  @IsInt()
   page!: number;
 
   /**

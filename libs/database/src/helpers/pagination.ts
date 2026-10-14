@@ -1,17 +1,7 @@
-/** 分页入参（通常来自 query string，故允许 string） */
-export interface PageQuery {
-  page?: number | string;
-  pageSize?: number | string;
-}
+import type { PageQueryDto, PageResponseDto } from '@app/common';
 
-/** 标准分页出参 */
-export interface PageResult<T> {
-  list: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-}
+/** 分页入参由 PageQueryDto 完成 HTTP 字符串转换和校验 */
+export type PageQuery = Pick<PageQueryDto, 'page' | 'pageSize'>;
 
 export const DEFAULT_PAGE = 1;
 export const DEFAULT_PAGE_SIZE = 20;
@@ -56,15 +46,17 @@ export function normalizePage(query: PageQuery = {}): {
 export async function paginate<T>(
   query: PageQuery,
   run: (pagination: { skip: number; take: number }) => Promise<[T[], number]>,
-): Promise<PageResult<T>> {
+): Promise<PageResponseDto<T>> {
   const { skip, take, page, pageSize } = normalizePage(query);
-  const [list, total] = await run({ skip, take });
+  const [items, total] = await run({ skip, take });
 
   return {
-    list,
-    total,
-    page,
-    pageSize,
-    totalPages: pageSize > 0 ? Math.ceil(total / pageSize) : 0,
+    items,
+    meta: {
+      page,
+      pageSize,
+      total,
+      totalPage: pageSize > 0 ? Math.ceil(total / pageSize) : 0,
+    },
   };
 }

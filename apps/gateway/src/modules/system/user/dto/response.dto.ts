@@ -1,5 +1,5 @@
-import type { PageResult, User } from '@app/database';
-import { Exclude, Expose, plainToInstance, Transform, Type } from 'class-transformer';
+import type { PageMetaDto, PageResponseDto } from '@app/common';
+import { Exclude, Expose, Transform, Type } from 'class-transformer';
 
 /**
  * 用户状态。取值严格对齐 `prisma/schema.prisma` 的 `status Int @default(1) @db.SmallInt`
@@ -17,14 +17,6 @@ export enum UserStatus {
 }
 
 /**
- * `plainToInstance` 的转换选项。
- *
- * 收敛成模块私有常量而不是在每个调用点手写：调用方无从绕过，
- * 也就不会出现「某个接口忘了加 `excludeExtraneousValues` 导致 password 泄漏」。
- */
-const RESPONSE_TRANSFORM_OPTIONS = { excludeExtraneousValues: true } as const;
-
-/**
  * 用户出参 DTO。
  *
  * 存在的意义不是「多写一层」，而是**把接口契约和数据库模型解耦**：
@@ -32,11 +24,11 @@ const RESPONSE_TRANSFORM_OPTIONS = { excludeExtraneousValues: true } as const;
  *   写进接口文档，前端也会拿到不该拿的字段；
  * - 数据库加列不该自动改接口——改这里是显式动作。
  *
- * 因此对外响应统一走 `UserResponseDto.from()`，不让 `User` 穿过 controller 边界。
+ * 因此对外响应统一用 `toDto()` / `toDtoList()` 转换，不让 `User` 穿过 controller 边界。
  *
  * ## 为什么是白名单而不是黑名单
  *
- * 类上 `@Exclude()` + 每个字段 `@Expose()`，配合 `excludeExtraneousValues: true`，
+ * 类上 `@Exclude()` + 每个字段 `@Expose()`，配合公共转换器的 `excludeExtraneousValues: true`，
  * 语义是 **deny-by-default**。两种写法的失败模式不对称：
  * - 白名单漏标 `@Expose()` → 字段没返回，一眼可见；
  * - 黑名单漏标 `@Exclude()` → `password` 泄漏，没人会发现。
@@ -48,7 +40,7 @@ const RESPONSE_TRANSFORM_OPTIONS = { excludeExtraneousValues: true } as const;
 export class UserResponseDto {
   /** 用户 ID */
   @Expose()
-  userId!: string;
+  userId!: number;
 
   /** 用户名 */
   @Expose()
@@ -85,66 +77,21 @@ export class UserResponseDto {
   @Expose()
   @Type(() => Date)
   updatedAt!: Date;
-
-  /**
-   * Prisma `User` → 出参 DTO。
-   *
-   * 走 `plainToInstance` 而不是手写对象字面量：新增列时不需要改这里，
-   * 由「类上的装饰器」这一处决定字段是否对外可见。
-   *
-   * ⚠️ `@Type(() => Date)` 会在转换时读取反射元数据，要求 `reflect-metadata`
-   * 已被加载。应用侧由 `@nestjs/common` 顺带加载；**spec 里必须显式
-   * `import 'reflect-metadata';` 且放在第一行**，否则报
-   * `TypeError: Reflect.getMetadata is not a function`。
-   */
-  static from(user: User): UserResponseDto {
-    return plainToInstance(UserResponseDto, user, RESPONSE_TRANSFORM_OPTIONS);
-  }
-
-  /**
-   * 批量映射。刻意用**一次** `plainToInstance` 处理整个数组，而不是 `list.map(from)`：
-   * 后者会做 N 次元数据查找。pageSize 上限 200，差别不大，但没理由付这个成本。
-   */
-  static fromList(users: User[]): UserResponseDto[] {
-    return plainToInstance(UserResponseDto, users, RESPONSE_TRANSFORM_OPTIONS);
-  }
 }
 
 /**
  * 用户分页响应。
  *
- * 为什么要有这个具体类，而不是直接用 `PageResult<UserResponseDto>`：
+ * 为什么要有这个具体类，而不是直接用 `PageResponseDto<UserResponseDto>`：
  * OpenAPI 3 没有泛型，泛型接口也无法被反射成 schema。把方法的返回类型声明成
  * 这个具体类，文档才能生成对应的 200 响应模型——不需要在 controller 上写任何 `@Api*`。
  *
- * `implements PageResult<UserResponseDto>` 保证字段与 `@app/database` 的契约一致：
- * 谁改了 `PageResult`，这里编译期就报错，文档不会悄悄落后于代码。
+ * `implements PageResponseDto<UserResponseDto>` 保证字段与公共分页响应契约一致。
  */
-export class UserPageDto implements PageResult<UserResponseDto> {
+export class UserPageDto implements PageResponseDto<UserResponseDto> {
   /** 当前页数据 */
-  list!: UserResponseDto[];
+  items!: UserResponseDto[];
 
-  /**
-   * 总条数
-   * @example 128
-   */
-  total!: number;
-
-  /**
-   * 当前页码
-   * @example 1
-   */
-  page!: number;
-
-  /**
-   * 每页条数
-   * @example 20
-   */
-  pageSize!: number;
-
-  /**
-   * 总页数
-   * @example 7
-   */
-  totalPages!: number;
+  /** 分页元数据 */
+  meta!: PageMetaDto;
 }

@@ -1,3 +1,4 @@
+import { toDto, toPageDto } from '@app/common';
 import { BusinessException } from '@app/core';
 import { paginate, Prisma, PrismaService } from '@app/database';
 import { Injectable } from '@nestjs/common';
@@ -64,7 +65,7 @@ function toUniqueViolation(error: unknown, message: string): BusinessException |
  * - **软删除**：`remove()` 只写 `deletedAt`，不物理删除。所有查询都带
  *   `deletedAt: null`，被删数据默认不可见；
  * - **密码不脱敏**：本模块不做密码哈希，`password` 按 DTO 原样落库。
- *   出参一律走 `UserResponseDto.from()`，`password` / `deletedAt` 不出接口；
+ *   出参一律用公共 DTO 转换器，`password` / `deletedAt` 不出接口；
  * - **越界字段不进库**：入参只取 DTO 上声明过的字段，不把 `dto` 直接展开给 Prisma，
  *   否则全局校验管道被绕过（或将来有人关掉 `whitelist`）时会变成批量赋值漏洞。
  */
@@ -73,7 +74,7 @@ export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
   /** 新增用户。用户名 / 邮箱冲突返回 409。 */
-  async create(dto: CreateUserDto): Promise<any> {
+  async create(dto: CreateUserDto): Promise<UserResponseDto> {
     await this.assertUsernameAvailable(dto.username);
 
     if (dto.email !== undefined) {
@@ -90,7 +91,7 @@ export class UserService {
         },
       });
 
-      return UserResponseDto.from(user);
+      return toDto(UserResponseDto, user)!;
     } catch (error) {
       const conflict = toUniqueViolation(error, '用户名或邮箱已被占用');
       if (conflict !== null) {
@@ -112,7 +113,7 @@ export class UserService {
       ]);
     });
 
-    return { ...result, list: UserResponseDto.fromList(result.list) };
+    return toPageDto(UserResponseDto, result);
   }
 
   /** 查询用户详情，不存在（或已软删除）返回 404。 */
@@ -123,7 +124,7 @@ export class UserService {
       throw BusinessException.notFound('用户不存在');
     }
 
-    return UserResponseDto.from(user);
+    return toDto(UserResponseDto, user)!;
   }
 
   /**
@@ -174,7 +175,7 @@ export class UserService {
     try {
       const user = await this.prisma.user.update({ where: { userId }, data });
 
-      return UserResponseDto.from(user);
+      return toDto(UserResponseDto, user)!;
     } catch (error) {
       const conflict = toUniqueViolation(error, '用户名或邮箱已被占用');
       if (conflict !== null) {

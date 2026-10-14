@@ -1,3 +1,4 @@
+import type { PageResponseDto } from './base.dto.js';
 import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { PageMetaDto } from './base.dto.js';
 
@@ -15,7 +16,7 @@ export function toDtoList<T>(cls: ClassConstructor<T>, plainList: object[] | nul
 
 export function toPageDto<T>(
   cls: ClassConstructor<T>,
-  data: { items: object[]; meta: { page: number; pageSize: number; total: number; totalPage: number } },
+  data: PageResponseDto<object>,
 ) {
   return {
     items: toDtoList(cls, data.items),
