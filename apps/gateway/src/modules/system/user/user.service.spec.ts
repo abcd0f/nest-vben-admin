@@ -1,5 +1,6 @@
 import type { PrismaService } from '@app/database';
 import { AuthService } from '@app/auth';
+import { JwtService } from '@nestjs/jwt';
 import { UserService } from './user.service.js';
 
 describe('userService password and ID contract', () => {
@@ -19,7 +20,10 @@ describe('userService password and ID contract', () => {
   it('hashes a new password and returns the full decimal ID', async () => {
     const create = vi.fn().mockResolvedValue(user);
     const prisma = { user: { findUnique: vi.fn().mockResolvedValue(null), create } } as unknown as PrismaService;
-    const auth = new AuthService();
+    const auth = new AuthService(prisma, new JwtService({ secret: 'test-secret' }), {
+      secret: 'test-secret',
+      tokenTtlSeconds: 60,
+    });
     const service = new UserService(prisma, auth);
 
     const response = await service.create({ username: 'test-user', password: 'P@ssw0rd' });
@@ -34,7 +38,11 @@ describe('userService password and ID contract', () => {
   it('never changes the password through the general update path', async () => {
     const update = vi.fn().mockResolvedValue(user);
     const prisma = { user: { findFirst: vi.fn().mockResolvedValue(user), update } } as unknown as PrismaService;
-    const service = new UserService(prisma, new AuthService());
+    const auth = new AuthService(prisma, new JwtService({ secret: 'test-secret' }), {
+      secret: 'test-secret',
+      tokenTtlSeconds: 60,
+    });
+    const service = new UserService(prisma, auth);
 
     await service.update(id, { nickName: 'New name', password: 'injected' } as never);
 
