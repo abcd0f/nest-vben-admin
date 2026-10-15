@@ -16,6 +16,10 @@ app:
   # HTTP 服务端口
   port: 3000
 
+auth:
+  secret: development-only-change-me
+  token-ttl-seconds: 28800
+
 database:
   # 占位连接串。真实值必须由 config/<env>.local.yaml 覆盖 —— 没有它会连不上，
   # 且启动时不会报配置错误（结构是合法的），请务必确认本地文件已建好。

@@ -1,4 +1,5 @@
 import { AuthModule } from '@app/auth';
+import { PermissionModule } from '@app/permission';
 import { Module } from '@nestjs/common';
 import { RoleModule } from '../role/role.module.js';
 import { UserController } from './user.controller.js';
@@ -11,7 +12,7 @@ import { UserService } from './user.service.js';
  * - 通过 `AuthService` 统一处理密码哈希。
  */
 @Module({
-  imports: [AuthModule, RoleModule],
+  imports: [AuthModule, PermissionModule, RoleModule],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService],

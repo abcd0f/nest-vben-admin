@@ -2,7 +2,8 @@ import { AuthService } from '@app/auth';
 import { toDto, toPageDto } from '@app/common';
 import { BusinessException } from '@app/core';
 import { paginate, Prisma, PrismaService } from '@app/database';
-import { Injectable } from '@nestjs/common';
+import { PermissionService } from '@app/permission';
+import { Injectable, Optional } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { QueryUserDto } from './dto/query-user.dto.js';
 import { UserPageDto, UserResponseDto } from './dto/response.dto.js';
@@ -74,10 +75,11 @@ export class UserService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly auth: AuthService,
+    @Optional() private readonly permissions?: PermissionService,
   ) {}
 
   /** 新增用户。用户名 / 邮箱冲突返回 409。 */
-  async create(dto: CreateUserDto): Promise<UserResponseDto> {
+  async create(dto: CreateUserDto, actorId?: bigint): Promise<UserResponseDto> {
     await this.assertUsernameAvailable(dto.username);
 
     if (dto.email !== undefined) {
@@ -86,6 +88,7 @@ export class UserService {
 
     const passwordHash = await this.auth.hashPassword(dto.password);
     const deptId = dto.deptId == null ? null : await this.resolveDept(dto.deptId);
+    if (actorId !== undefined) await this.assertCreateScope(actorId, deptId);
 
     try {
       const user = await this.prisma.user.create({
@@ -110,8 +113,9 @@ export class UserService {
   }
 
   /** 分页查询用户列表。 */
-  async findPage(query: QueryUserDto): Promise<UserPageDto> {
+  async findPage(query: QueryUserDto, actorId?: bigint): Promise<UserPageDto> {
     const where = this.buildWhere(query);
+    if (actorId !== undefined) Object.assign(where, await this.scopeWhere(actorId, 'system:user:list'));
 
     const result = await paginate(query, ({ skip, take }) => {
       return Promise.all([
@@ -124,7 +128,8 @@ export class UserService {
   }
 
   /** 查询用户详情，不存在（或已软删除）返回 404。 */
-  async findOne(userId: bigint): Promise<UserResponseDto> {
+  async findOne(userId: bigint, actorId?: bigint): Promise<UserResponseDto> {
+    if (actorId !== undefined) await this.assertUserScope(actorId, 'system:user:query', userId);
     const user = await this.prisma.user.findFirst({ where: { userId, deletedAt: null } });
 
     if (user === null) {
@@ -142,7 +147,9 @@ export class UserService {
    * - `username` / `status` 是 NOT NULL，传 `null` 视为**未传**
    *   （忽略）。它们没有「清空」这个状态，把 `null` 写进 Prisma 只会换来一个 500。
    */
-  async update(userId: bigint, dto: UpdateUserDto): Promise<UserResponseDto> {
+  async update(userId: bigint, dto: UpdateUserDto, actorId?: bigint): Promise<UserResponseDto> {
+    if (actorId !== undefined) await this.assertUserScope(actorId, 'system:user:update', userId);
+    if (dto.status === 0) await this.assertNotLastSystemAdmin(userId);
     const current = await this.prisma.user.findFirst({ where: { userId, deletedAt: null } });
 
     if (current === null) {
@@ -176,6 +183,7 @@ export class UserService {
       data.status = dto.status;
     }
     if (dto.deptId !== undefined) {
+      if (actorId !== undefined && dto.deptId !== null) await this.assertDeptScope(actorId, 'system:user:update', BigInt(dto.deptId));
       data.dept = dto.deptId === null ? { disconnect: true } : { connect: { deptId: await this.resolveDept(dto.deptId) } };
     }
     try {
@@ -200,7 +208,9 @@ export class UserService {
    * 若要允许复用，应改为「删除时把 username 改写为 `name#<uuid>`」的部分索引方案，
    * 那是一次 schema 变更，不在本次范围。
    */
-  async remove(userId: bigint): Promise<void> {
+  async remove(userId: bigint, actorId?: bigint): Promise<void> {
+    if (actorId !== undefined) await this.assertUserScope(actorId, 'system:user:delete', userId);
+    await this.assertNotLastSystemAdmin(userId);
     const current = await this.prisma.user.findFirst({ where: { userId, deletedAt: null } });
 
     if (current === null) {
@@ -208,6 +218,60 @@ export class UserService {
     }
 
     await this.prisma.user.update({ where: { userId }, data: { deletedAt: new Date() } });
+  }
+
+  async changeOwnPassword(userId: bigint, dto: { currentPassword: string; newPassword: string }): Promise<void> {
+    const user = await this.prisma.user.findFirst({ where: { userId, status: 1, deletedAt: null } });
+    if (user === null || !(await this.auth.verifyPassword(dto.currentPassword, user.password))) {
+      throw BusinessException.badRequest('当前密码错误');
+    }
+    await this.prisma.user.update({ where: { userId }, data: { password: await this.auth.hashPassword(dto.newPassword) } });
+  }
+
+  async resetPassword(userId: bigint, newPassword: string): Promise<void> {
+    const user = await this.prisma.user.findFirst({ where: { userId, deletedAt: null } });
+    if (user === null) throw BusinessException.notFound('用户不存在');
+    await this.prisma.user.update({ where: { userId }, data: { password: await this.auth.hashPassword(newPassword) } });
+  }
+
+  private async assertCreateScope(actorId: bigint, deptId: bigint | null) {
+    if (!this.permissions) return;
+    const scope = await this.permissions.getDataScope(actorId, 'system:user:create');
+    if (scope.all) return;
+    if (deptId === null || !scope.deptIds.has(deptId)) throw BusinessException.forbidden('超出允许的数据范围');
+  }
+
+  private async assertNotLastSystemAdmin(userId: bigint) {
+    const isAdmin = await this.prisma.userRole.findFirst({ where: { userId, role: { isSystem: true, status: 1, deletedAt: null } } });
+    if (!isAdmin) return;
+    const count = await this.prisma.userRole.count({ where: { role: { isSystem: true, status: 1, deletedAt: null }, user: { status: 1, deletedAt: null } } });
+    if (count <= 1) throw BusinessException.conflict('不能停用或删除最后一个有效授权管理员');
+  }
+
+  private async assertDeptScope(actorId: bigint, code: string, deptId: bigint) {
+    if (!this.permissions) return;
+    const scope = await this.permissions.getDataScope(actorId, code);
+    if (!scope.all && !scope.deptIds.has(deptId)) throw BusinessException.forbidden('超出允许的数据范围');
+  }
+
+  private async assertUserScope(actorId: bigint, code: string, targetUserId: bigint) {
+    if (!this.permissions) return;
+    const target = await this.prisma.user.findFirst({ where: { userId: targetUserId, deletedAt: null }, select: { userId: true, deptId: true } });
+    if (!target) throw BusinessException.notFound('用户不存在');
+    const scope = await this.permissions.getDataScope(actorId, code);
+    if (scope.all || (scope.self && target.userId === actorId) || (target.deptId !== null && scope.deptIds.has(target.deptId))) return;
+    throw BusinessException.forbidden('超出允许的数据范围');
+  }
+
+  private async scopeWhere(actorId: bigint, code: string): Promise<Prisma.UserWhereInput> {
+    if (!this.permissions) return {};
+    const scope = await this.permissions.getDataScope(actorId, code);
+    if (scope.all) return {};
+    const clauses: Prisma.UserWhereInput[] = [];
+    if (scope.self) clauses.push({ userId: actorId });
+    if (scope.deptIds.size > 0) clauses.push({ deptId: { in: [...scope.deptIds] } });
+    if (clauses.length === 0) throw BusinessException.forbidden('没有可访问的数据范围');
+    return { OR: clauses };
   }
 
   /** 组装列表查询条件：软删除过滤 + 模糊匹配 + 状态等值。 */

@@ -25,7 +25,10 @@ export class MenuService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll() {
-    const rows = await this.prisma.menu.findMany({ where: { deletedAt: null }, orderBy: [{ sortOrder: 'asc' }, { menuId: 'asc' }] });
+    const rows = await this.prisma.menu.findMany({
+      where: { deletedAt: null },
+      orderBy: [{ sortOrder: 'asc' }, { menuId: 'asc' }],
+    });
     return rows.map((row) => toDto(MenuResponseDto, row));
   }
 
@@ -78,7 +81,8 @@ export class MenuService {
     if (parentId !== undefined && parentId !== null) {
       if (parentId === menuId) throw BusinessException.badRequest('菜单不能设置自身为上级');
       await this.assertActiveParent(parentId);
-      if (menuId !== undefined && (await this.hasDescendant(parentId, menuId))) throw BusinessException.badRequest('不能将菜单移动到自己的下级');
+      if (menuId !== undefined && (await this.hasDescendant(parentId, menuId)))
+        throw BusinessException.badRequest('不能将菜单移动到自己的下级');
     }
     const menuType = dto.menuType ?? current?.menuType;
     const permissionCode = dto.permissionCode === undefined ? current?.permissionCode : dto.permissionCode;
@@ -87,17 +91,24 @@ export class MenuService {
       throw BusinessException.badRequest('目录和页面菜单不能设置权限码');
     const effectiveParentId = parentId === undefined ? current?.parentId : parentId;
     if (effectiveParentId !== undefined && effectiveParentId !== null && menuType !== undefined) {
-      const parent = await this.prisma.menu.findFirst({ where: { menuId: effectiveParentId }, select: { menuType: true } });
+      const parent = await this.prisma.menu.findFirst({
+        where: { menuId: effectiveParentId },
+        select: { menuType: true },
+      });
       const validParent =
         (menuType === MenuType.MENU && parent?.menuType === MenuType.DIRECTORY) ||
         (menuType === MenuType.ACTION && parent?.menuType === MenuType.MENU);
       if (!validParent) throw BusinessException.badRequest('菜单父子类型关系无效');
     }
     if (menuId !== undefined && menuType !== undefined) {
-      const children = await this.prisma.menu.findMany({ where: { parentId: menuId, deletedAt: null }, select: { menuType: true } });
-      const validChildren = children.every((child) =>
-        (menuType === MenuType.DIRECTORY && child.menuType === MenuType.MENU) ||
-        (menuType === MenuType.MENU && child.menuType === MenuType.ACTION),
+      const children = await this.prisma.menu.findMany({
+        where: { parentId: menuId, deletedAt: null },
+        select: { menuType: true },
+      });
+      const validChildren = children.every(
+        (child) =>
+          (menuType === MenuType.DIRECTORY && child.menuType === MenuType.MENU) ||
+          (menuType === MenuType.MENU && child.menuType === MenuType.ACTION),
       );
       if (!validChildren) throw BusinessException.conflict('菜单类型变更会破坏子节点关系');
     }
@@ -119,7 +130,10 @@ export class MenuService {
   }
 
   private async hasDescendant(candidate: bigint, ancestor: bigint): Promise<boolean> {
-    const children = await this.prisma.menu.findMany({ where: { parentId: ancestor, deletedAt: null }, select: { menuId: true } });
+    const children = await this.prisma.menu.findMany({
+      where: { parentId: ancestor, deletedAt: null },
+      select: { menuId: true },
+    });
     for (const child of children) {
       if (child.menuId === candidate || (await this.hasDescendant(candidate, child.menuId))) return true;
     }

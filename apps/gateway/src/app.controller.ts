@@ -1,3 +1,4 @@
+import { Public } from '@app/auth';
 import { RawResponse } from '@app/core';
 import { Controller, Get } from '@nestjs/common';
 
@@ -10,6 +11,7 @@ export class AppController {
    */
 
   @Get()
+  @Public()
   @RawResponse()
   getHello(): string {
     return '欢迎使用 nest-admin-backend ！';

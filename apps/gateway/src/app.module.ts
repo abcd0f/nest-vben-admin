@@ -1,12 +1,16 @@
+import { AuthGuard, AuthModule } from '@app/auth';
 import { CacheModule } from '@app/cache';
 import { AppConfigModule } from '@app/config';
 import { CoreModule } from '@app/core';
 import { DatabaseModule } from '@app/database';
 import { AppLoggerModule } from '@app/logger';
+import { PermissionGuard, PermissionModule } from '@app/permission';
+
 import { AppSwaggerModule } from '@app/swagger';
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller.js';
-
+import { GatewayAuthModule } from './modules/auth/auth.module.js';
 import { SystemModule } from './modules/system/system.module.js';
 
 @Module({
@@ -27,8 +31,14 @@ import { SystemModule } from './modules/system/system.module.js';
     // 接口文档（注释驱动）。挂载动作在 main.ts 的 setupSwagger()，不在模块里。
     AppSwaggerModule.forRoot(),
     SystemModule,
+    AuthModule,
+    PermissionModule,
+    GatewayAuthModule,
   ],
   controllers: [AppController],
-  providers: [],
+  providers: [
+    { provide: APP_GUARD, useClass: AuthGuard },
+    { provide: APP_GUARD, useClass: PermissionGuard },
+  ],
 })
 export class AppModule {}

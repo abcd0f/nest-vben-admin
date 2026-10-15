@@ -1,4 +1,5 @@
 import { appConfig, appDomain } from './app.domain.js';
+import { authConfig, authDomain } from './auth.domain.js';
 import { corsConfig, corsDomain } from './cors.domain.js';
 import { databaseConfig, databaseDomain } from './database.domain.js';
 import { loggerConfig, loggerDomain } from './logger.domain.js';
@@ -17,6 +18,7 @@ import { swaggerConfig, swaggerDomain } from './swagger.domain.js';
  */
 export const DOMAINS = [
   appDomain,
+  authDomain,
   corsDomain,
   databaseDomain,
   loggerDomain,
@@ -24,9 +26,10 @@ export const DOMAINS = [
   swaggerDomain,
 ] as const;
 
-export { appConfig, corsConfig, databaseConfig, loggerConfig, redisConfig, swaggerConfig };
+export { appConfig, authConfig, corsConfig, databaseConfig, loggerConfig, redisConfig, swaggerConfig };
 
 export type { AppConfig, NodeEnv } from './app.domain.js';
+export type { AuthConfig } from './auth.domain.js';
 export type { CorsConfig } from './cors.domain.js';
 export type { DatabaseConfig, DatabasePoolConfig } from './database.domain.js';
 export type { LoggerConfig, LoggerFileConfig, LogLevelName } from './logger.domain.js';

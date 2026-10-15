@@ -15,4 +15,8 @@ describe('authService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+  it('rejects malformed and expired tokens', () => {
+    expect(() => service.verifyToken('bad-token')).toThrow();
+  });
 });

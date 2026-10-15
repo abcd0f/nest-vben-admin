@@ -1,4 +1,7 @@
+import { CurrentUser } from '@app/auth';
+import { Permission, SystemAdmin } from '@app/permission';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
+import { ResetPasswordDto } from '../../auth/auth.dto.js';
 
 import { ReplaceIdsDto } from '../role/role.dto.js';
 import { RoleService } from '../role/role.service.js';
@@ -30,11 +33,17 @@ export class UserController {
     private readonly roleService: RoleService,
   ) {}
 
-  @Put(':userId/posts') replacePosts(@Param('userId', UserIdPipe) userId: bigint, @Body() dto: ReplaceIdsDto) {
+  @Put(':userId/posts')
+  @Permission('system:user:assign-posts')
+  @SystemAdmin()
+  replacePosts(@Param('userId', UserIdPipe) userId: bigint, @Body() dto: ReplaceIdsDto) {
     return this.roleService.replaceUserPosts(userId, dto);
   }
 
-  @Put(':userId/roles') replaceRoles(@Param('userId', UserIdPipe) userId: bigint, @Body() dto: ReplaceIdsDto) {
+  @Put(':userId/roles')
+  @Permission('system:user:assign-roles')
+  @SystemAdmin()
+  replaceRoles(@Param('userId', UserIdPipe) userId: bigint, @Body() dto: ReplaceIdsDto) {
     return this.roleService.replaceUserRoles(userId, dto);
   }
 
@@ -45,8 +54,9 @@ export class UserController {
    * 冲突时返回业务码 409。入参约束见 `CreateUserDto`，违反约束返回 422 + 字段级 `details`。
    */
   @Post()
-  create(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
-    return this.userService.create(createUserDto);
+  @Permission('system:user:create')
+  create(@Body() createUserDto: CreateUserDto, @CurrentUser() current: { userId: bigint }): Promise<UserResponseDto> {
+    return this.userService.create(createUserDto, current.userId);
   }
 
   /**
@@ -58,8 +68,9 @@ export class UserController {
    * 已软删除（`deletedAt` 非空）的用户不会出现在结果里。
    */
   @Get()
-  findPage(@Query() query: QueryUserDto): Promise<UserPageDto> {
-    return this.userService.findPage(query);
+  @Permission('system:user:list')
+  findPage(@Query() query: QueryUserDto, @CurrentUser() current: { userId: bigint }): Promise<UserPageDto> {
+    return this.userService.findPage(query, current.userId);
   }
 
   /**
@@ -68,8 +79,12 @@ export class UserController {
    * @remarks 返回体不含 `password`、`deletedAt`。目标不存在或已软删除时返回 404。
    */
   @Get(':userId')
-  findOne(@Param('userId', UserIdPipe) userId: bigint): Promise<UserResponseDto> {
-    return this.userService.findOne(userId);
+  @Permission('system:user:query')
+  findOne(
+    @Param('userId', UserIdPipe) userId: bigint,
+    @CurrentUser() current: { userId: bigint },
+  ): Promise<UserResponseDto> {
+    return this.userService.findOne(userId, current.userId);
   }
 
   /**
@@ -81,8 +96,13 @@ export class UserController {
    * NOT NULL 列，传 `null` 会被忽略（视为未传）。
    */
   @Patch(':userId')
-  update(@Param('userId', UserIdPipe) userId: bigint, @Body() updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
-    return this.userService.update(userId, updateUserDto);
+  @Permission('system:user:update')
+  update(
+    @Param('userId', UserIdPipe) userId: bigint,
+    @Body() updateUserDto: UpdateUserDto,
+    @CurrentUser() current: { userId: bigint },
+  ): Promise<UserResponseDto> {
+    return this.userService.update(userId, updateUserDto, current.userId);
   }
 
   /**
@@ -92,7 +112,15 @@ export class UserController {
    * 注意：被删除的用户名 / 邮箱仍占用唯一索引，重建同名用户会被拒绝。
    */
   @Delete(':userId')
-  remove(@Param('userId', UserIdPipe) userId: bigint): Promise<void> {
-    return this.userService.remove(userId);
+  @Permission('system:user:delete')
+  remove(@Param('userId', UserIdPipe) userId: bigint, @CurrentUser() current: { userId: bigint }): Promise<void> {
+    return this.userService.remove(userId, current.userId);
+  }
+
+  @Patch(':userId/password/reset')
+  @Permission('system:user:reset-password')
+  @SystemAdmin()
+  resetPassword(@Param('userId', UserIdPipe) userId: bigint, @Body() dto: ResetPasswordDto): Promise<void> {
+    return this.userService.resetPassword(userId, dto.newPassword);
   }
 }

@@ -38,12 +38,12 @@ describe('config parsers', () => {
 });
 
 describe('config registry', () => {
-  it('加载当前环境并编译六个配置域', () => {
+  it('加载当前环境并编译七个配置域', () => {
     const snapshot = configSource();
     const compiled = compileConfig(DOMAINS, snapshot);
 
     expect(snapshot.environment).toBe('development');
-    expect(compiled.values.size).toBe(6);
+    expect(compiled.values.size).toBe(7);
     expect(getCompiledConfig('app')).toMatchObject({ port: 6688, nodeEnv: 'development' });
     expect(getCompiledConfig('database')).toMatchObject({ schema: 'public' });
   });

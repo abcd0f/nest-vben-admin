@@ -2,20 +2,8 @@ import { toDto } from '@app/common';
 import { BusinessException } from '@app/core';
 import { PrismaService } from '@app/database';
 import { Injectable } from '@nestjs/common';
-import { Exclude, Expose, Transform } from 'class-transformer';
-import { CreateRoleDto, DataScope, ReplaceIdsDto, UpdateRoleDto } from './role.dto.js';
 
-@Exclude()
-export class RoleResponseDto {
-  @Expose() @Transform(({ value }) => value.toString()) roleId!: string;
-  @Expose() roleCode!: string;
-  @Expose() roleName!: string;
-  @Expose() dataScope!: DataScope;
-  @Expose() status!: number;
-  @Expose() isSystem!: boolean;
-  @Expose() createdAt!: Date;
-  @Expose() updatedAt!: Date;
-}
+import { CreateRoleDto, DataScope, ReplaceIdsDto, RoleResponseDto, UpdateRoleDto } from './role.dto.js';
 
 @Injectable()
 export class RoleService {
@@ -79,6 +67,21 @@ export class RoleService {
     await this.assertUser(userId);
     const roleIds = this.parseIds(dto.ids);
     await this.assertActiveRoles(roleIds);
+    const currentSystem = await this.prisma.userRole?.findFirst({
+      where: { userId, role: { isSystem: true, status: 1, deletedAt: null } },
+    });
+    const retainsSystem =
+      roleIds.length > 0 &&
+      (await this.prisma.role.count({
+        where: { roleId: { in: roleIds }, isSystem: true, status: 1, deletedAt: null },
+      })) > 0;
+    if (currentSystem && !retainsSystem) {
+      const administrators =
+        (await this.prisma.userRole?.count({
+          where: { role: { isSystem: true, status: 1, deletedAt: null }, user: { status: 1, deletedAt: null } },
+        })) ?? 2;
+      if (administrators <= 1) throw BusinessException.conflict('不能解绑最后一个有效授权管理员');
+    }
     await this.prisma.$transaction(async (tx) => {
       await tx.userRole.deleteMany({ where: { userId } });
       if (roleIds.length > 0) await tx.userRole.createMany({ data: roleIds.map((roleId) => ({ userId, roleId })) });
