@@ -43,15 +43,15 @@ model User {
   /// 用户记录最后更新时间
   updatedTime DateTime @updatedAt @map("updated_time") @db.Timestamptz(3)
 
-  /// 用户软删除时间
-  deletedTime DateTime? @map("deleted_time") @db.Timestamptz(3)
+  /// 用户软删除标记：0 未删除，1 已删除
+  isDel Int @default(0) @map("is_del") @db.SmallInt
 
   dept  Dept?      @relation(fields: [deptId], references: [deptId], onDelete: Restrict, onUpdate: Cascade)
   posts UserPost[]
   roles UserRole[]
 
-  /// 为软删除时间建立索引
-  @@index([deletedTime])
+  /// 为软删除标记建立索引
+  @@index([isDel])
   @@index([deptId])
   /// 指定数据库表名为 sys_user
   @@map("sys_user")

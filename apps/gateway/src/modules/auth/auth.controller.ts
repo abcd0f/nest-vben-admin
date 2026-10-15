@@ -26,7 +26,7 @@ export class AuthController {
   @Get('me')
   async me(@CurrentUser() current: { userId: bigint }) {
     const user = await this.auth.assertActiveUser(current.userId);
-    const { password: _password, deletedAt: _deletedAt, ...safe } = user;
+    const { password: _password, isDel: _isDel, ...safe } = user;
     return { ...safe, userId: safe.userId.toString(), deptId: safe.deptId?.toString() ?? null };
   }
 

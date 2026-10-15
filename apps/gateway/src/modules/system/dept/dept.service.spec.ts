@@ -4,7 +4,7 @@ import { DeptService } from './dept.service.js';
 
 describe('deptService', () => {
   it('rejects moving a department under itself or its descendant', async () => {
-    const current = { deptId: 1n, parentId: null, deptName: 'A', sortOrder: 0, status: 1, deletedAt: null };
+    const current = { deptId: 1n, parentId: null, deptName: 'A', sortOrder: 0, status: 1, isDel: 0 };
     const prisma = {
       dept: {
         findFirst: vi.fn().mockResolvedValueOnce(current).mockResolvedValueOnce({ deptId: 2n }),

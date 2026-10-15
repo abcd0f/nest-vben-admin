@@ -57,8 +57,8 @@ export class RoleResponseDto {
   @Expose() dataScope!: DataScope;
   @Expose() status!: number;
   @Expose() isSystem!: boolean;
-  @Expose() createdAt!: Date;
-  @Expose() updatedAt!: Date;
+  @Expose() createdTime!: Date;
+  @Expose() updatedTime!: Date;
 }
 
 export class ReplaceIdsDto extends IdListDto {}

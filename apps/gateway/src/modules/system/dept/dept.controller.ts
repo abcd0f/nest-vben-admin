@@ -2,7 +2,7 @@ import { BigIntIdPipe } from '@app/core';
 import { Permission } from '@app/permission';
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { DeptService } from './dept.service.js';
-import { DeptDto } from './dto.js';
+import { DeptDto } from './dto/dept.dto.js';
 
 @Controller('system/dept')
 export class DeptController {

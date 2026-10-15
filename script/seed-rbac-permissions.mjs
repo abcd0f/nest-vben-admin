@@ -36,12 +36,12 @@ const client = new Client({ connectionString });
 await client.connect();
 try {
   await client.query('BEGIN');
-  const { rows: roles } = await client.query('SELECT role_id::text FROM sys_role WHERE is_system = true AND status = 1 AND deleted_at IS NULL');
+  const { rows: roles } = await client.query('SELECT role_id::text FROM sys_role WHERE is_system = true AND status = 1 AND is_del = 0');
   if (roles.length !== 1) throw new Error(`需要恰好一个有效系统角色，当前找到 ${roles.length} 个`);
   let inserted = 0;
   for (const [permissionCode, menuName] of permissions) {
     const result = await client.query(
-      `INSERT INTO sys_menu (menu_type, menu_name, permission_code, status, updated_at)
+      `INSERT INTO sys_menu (menu_type, menu_name, permission_code, status, updated_time)
        VALUES ('ACTION', $1, $2, 1, CURRENT_TIMESTAMP)
        ON CONFLICT (permission_code) DO NOTHING
        RETURNING menu_id`,
@@ -51,7 +51,7 @@ try {
       inserted++;
       await client.query('INSERT INTO sys_role_menu (role_id, menu_id) VALUES ($1, $2) ON CONFLICT DO NOTHING', [roles[0].role_id, result.rows[0].menu_id]);
     } else {
-      const { rows } = await client.query('SELECT menu_id FROM sys_menu WHERE permission_code = $1 AND menu_type = \'ACTION\' AND status = 1 AND deleted_at IS NULL', [permissionCode]);
+      const { rows } = await client.query('SELECT menu_id FROM sys_menu WHERE permission_code = $1 AND menu_type = \'ACTION\' AND status = 1 AND is_del = 0', [permissionCode]);
       if (rows[0]) await client.query('INSERT INTO sys_role_menu (role_id, menu_id) VALUES ($1, $2) ON CONFLICT DO NOTHING', [roles[0].role_id, rows[0].menu_id]);
     }
   }

@@ -1,6 +1,6 @@
 import type { PrismaService } from '@app/database';
 import { BusinessException } from '@app/core';
-import { MenuType } from './menu.dto.js';
+import { MenuType } from './dto/menu.dto.js';
 import { MenuService } from './menu.service.js';
 
 describe('menuService', () => {

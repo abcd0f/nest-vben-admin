@@ -4,7 +4,7 @@ import { Permission, SystemAdmin } from '@app/permission';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
 import { ResetPasswordDto } from '../../auth/auth.dto.js';
 
-import { ReplaceIdsDto } from '../role/role.dto.js';
+import { ReplaceIdsDto } from '../role/dto/role.dto.js';
 import { RoleService } from '../role/role.service.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { QueryUserDto } from './dto/query-user.dto.js';
@@ -65,7 +65,7 @@ export class UserController {
    * @remarks 支持用户名 / 邮箱 / 昵称模糊匹配与状态等值筛选，默认按创建时间倒序。
    * 筛选条件传空串等同于「不筛选」。分页参数由 `PageQueryDto` 校验：缺省为 1 / 20，
    * `pageSize` 上限 200，非法或越界取值返回 422（不做静默截断）。
-   * 已软删除（`deletedAt` 非空）的用户不会出现在结果里。
+   * 已软删除（`isDel = 1`）的用户不会出现在结果里。
    */
   @Get()
   @Permission('system:user:list')
@@ -76,7 +76,7 @@ export class UserController {
   /**
    * 用户详情
    *
-   * @remarks 返回体不含 `password`、`deletedAt`。目标不存在或已软删除时返回 404。
+   * @remarks 返回体不含 `password`、`isDel`。目标不存在或已软删除时返回 404。
    */
   @Get(':userId')
   @Permission('system:user:query')
@@ -108,7 +108,7 @@ export class UserController {
   /**
    * 删除用户（软删除）
    *
-   * @remarks 只写 `deletedAt`，数据行保留以便追溯与恢复；重复删除返回 404。
+   * @remarks 只写 `isDel = 1`，数据行保留以便追溯与恢复；重复删除返回 404。
    * 注意：被删除的用户名 / 邮箱仍占用唯一索引，重建同名用户会被拒绝。
    */
   @Delete(':userId')

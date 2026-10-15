@@ -20,7 +20,7 @@ export enum UserStatus {
  * 用户出参 DTO。
  *
  * 存在的意义不是「多写一层」，而是**把接口契约和数据库模型解耦**：
- * - `User`（Prisma 模型）带 `password` / `deletedAt`，直接当响应类型会把密码
+ * - `User`（Prisma 模型）带 `password` / `isDel`，直接当响应类型会把密码
  *   写进接口文档，前端也会拿到不该拿的字段；
  * - 数据库加列不该自动改接口——改这里是显式动作。
  *
@@ -76,12 +76,12 @@ export class UserResponseDto {
   /** 创建时间 */
   @Expose()
   @Type(() => Date)
-  createdAt!: Date;
+  createdTime!: Date;
 
   /** 更新时间 */
   @Expose()
   @Type(() => Date)
-  updatedAt!: Date;
+  updatedTime!: Date;
 }
 
 /**

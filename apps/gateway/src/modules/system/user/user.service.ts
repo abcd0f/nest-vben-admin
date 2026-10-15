@@ -64,9 +64,9 @@ function toUniqueViolation(error: unknown, message: string): BusinessException |
  * 用户 CRUD 服务。
  *
  * 约定（与 `prisma/schema.prisma` 的 `User` 模型一一对应）：
- * - **软删除**：`remove()` 只写 `deletedAt`，不物理删除。所有查询都带
- *   `deletedAt: null`，被删数据默认不可见；
- * - **密码哈希**：创建时存储强哈希，出参不含 `password` / `deletedAt`；
+ * - **软删除**：`remove()` 只写 `isDel = 1`，不物理删除。所有查询都带
+ *   `isDel: 0`，被删数据默认不可见；
+ * - **密码哈希**：创建时存储强哈希，出参不含 `password` / `isDel`；
  * - **越界字段不进库**：入参只取 DTO 上声明过的字段，不把 `dto` 直接展开给 Prisma，
  *   否则全局校验管道被绕过（或将来有人关掉 `whitelist`）时会变成批量赋值漏洞。
  */
@@ -119,7 +119,7 @@ export class UserService {
 
     const result = await paginate(query, ({ skip, take }) => {
       return Promise.all([
-        this.prisma.user.findMany({ where, skip, take, orderBy: { createdAt: 'desc' } }),
+        this.prisma.user.findMany({ where, skip, take, orderBy: { createdTime: 'desc' } }),
         this.prisma.user.count({ where }),
       ]);
     });
@@ -130,7 +130,7 @@ export class UserService {
   /** 查询用户详情，不存在（或已软删除）返回 404。 */
   async findOne(userId: bigint, actorId?: bigint): Promise<UserResponseDto> {
     if (actorId !== undefined) await this.assertUserScope(actorId, 'system:user:query', userId);
-    const user = await this.prisma.user.findFirst({ where: { userId, deletedAt: null } });
+    const user = await this.prisma.user.findFirst({ where: { userId, isDel: 0 } });
 
     if (user === null) {
       throw BusinessException.notFound('用户不存在');
@@ -150,7 +150,7 @@ export class UserService {
   async update(userId: bigint, dto: UpdateUserDto, actorId?: bigint): Promise<UserResponseDto> {
     if (actorId !== undefined) await this.assertUserScope(actorId, 'system:user:update', userId);
     if (dto.status === 0) await this.assertNotLastSystemAdmin(userId);
-    const current = await this.prisma.user.findFirst({ where: { userId, deletedAt: null } });
+    const current = await this.prisma.user.findFirst({ where: { userId, isDel: 0 } });
 
     if (current === null) {
       throw BusinessException.notFound('用户不存在');
@@ -201,27 +201,27 @@ export class UserService {
   }
 
   /**
-   * 软删除用户：写 `deletedAt`，行保留。
+   * 软删除用户：写 `isDel = 1`，行保留。
    *
    * 注意一个副作用：`users.username` / `users.email` 上的唯一索引是**全局的**，
-   * 不含 `deletedAt` 条件，因此被软删除的用户名不会被释放——同名重建会返回 409。
+   * 不含 `isDel` 条件，因此被软删除的用户名不会被释放——同名重建会返回 409。
    * 若要允许复用，应改为「删除时把 username 改写为 `name#<uuid>`」的部分索引方案，
    * 那是一次 schema 变更，不在本次范围。
    */
   async remove(userId: bigint, actorId?: bigint): Promise<void> {
     if (actorId !== undefined) await this.assertUserScope(actorId, 'system:user:delete', userId);
     await this.assertNotLastSystemAdmin(userId);
-    const current = await this.prisma.user.findFirst({ where: { userId, deletedAt: null } });
+    const current = await this.prisma.user.findFirst({ where: { userId, isDel: 0 } });
 
     if (current === null) {
       throw BusinessException.notFound('用户不存在');
     }
 
-    await this.prisma.user.update({ where: { userId }, data: { deletedAt: new Date() } });
+    await this.prisma.user.update({ where: { userId }, data: { isDel: 1 } });
   }
 
   async changeOwnPassword(userId: bigint, dto: { currentPassword: string; newPassword: string }): Promise<void> {
-    const user = await this.prisma.user.findFirst({ where: { userId, status: 1, deletedAt: null } });
+    const user = await this.prisma.user.findFirst({ where: { userId, status: 1, isDel: 0 } });
     if (user === null || !(await this.auth.verifyPassword(dto.currentPassword, user.password))) {
       throw BusinessException.badRequest('当前密码错误');
     }
@@ -229,7 +229,7 @@ export class UserService {
   }
 
   async resetPassword(userId: bigint, newPassword: string): Promise<void> {
-    const user = await this.prisma.user.findFirst({ where: { userId, deletedAt: null } });
+    const user = await this.prisma.user.findFirst({ where: { userId, isDel: 0 } });
     if (user === null) throw BusinessException.notFound('用户不存在');
     await this.prisma.user.update({ where: { userId }, data: { password: await this.auth.hashPassword(newPassword) } });
   }
@@ -242,9 +242,9 @@ export class UserService {
   }
 
   private async assertNotLastSystemAdmin(userId: bigint) {
-    const isAdmin = await this.prisma.userRole.findFirst({ where: { userId, role: { isSystem: true, status: 1, deletedAt: null } } });
+    const isAdmin = await this.prisma.userRole.findFirst({ where: { userId, role: { isSystem: true, status: 1, isDel: 0 } } });
     if (!isAdmin) return;
-    const count = await this.prisma.userRole.count({ where: { role: { isSystem: true, status: 1, deletedAt: null }, user: { status: 1, deletedAt: null } } });
+    const count = await this.prisma.userRole.count({ where: { role: { isSystem: true, status: 1, isDel: 0 }, user: { status: 1, isDel: 0 } } });
     if (count <= 1) throw BusinessException.conflict('不能停用或删除最后一个有效授权管理员');
   }
 
@@ -256,7 +256,7 @@ export class UserService {
 
   private async assertUserScope(actorId: bigint, code: string, targetUserId: bigint) {
     if (!this.permissions) return;
-    const target = await this.prisma.user.findFirst({ where: { userId: targetUserId, deletedAt: null }, select: { userId: true, deptId: true } });
+    const target = await this.prisma.user.findFirst({ where: { userId: targetUserId, isDel: 0 }, select: { userId: true, deptId: true } });
     if (!target) throw BusinessException.notFound('用户不存在');
     const scope = await this.permissions.getDataScope(actorId, code);
     if (scope.all || (scope.self && target.userId === actorId) || (target.deptId !== null && scope.deptIds.has(target.deptId))) return;
@@ -276,7 +276,7 @@ export class UserService {
 
   /** 组装列表查询条件：软删除过滤 + 模糊匹配 + 状态等值。 */
   private buildWhere(query: QueryUserDto): Prisma.UserWhereInput {
-    const where: Prisma.UserWhereInput = { deletedAt: null };
+    const where: Prisma.UserWhereInput = { isDel: 0 };
 
     const username = normalizeFilter(query.username);
     const email = normalizeFilter(query.email);
@@ -303,7 +303,7 @@ export class UserService {
   private async resolveDept(value: string): Promise<bigint> {
     const deptId = BigInt(value);
     if (deptId > 9223372036854775807n) throw BusinessException.badRequest('部门 ID 超出 BIGINT 范围');
-    const dept = await this.prisma.dept.findFirst({ where: { deptId, status: 1, deletedAt: null } });
+    const dept = await this.prisma.dept.findFirst({ where: { deptId, status: 1, isDel: 0 } });
     if (dept === null) throw BusinessException.badRequest('部门不存在、已停用或已删除');
     return deptId;
   }
@@ -311,14 +311,14 @@ export class UserService {
   /**
    * 用户名可用性检查。
    *
-   * 刻意**不带** `deletedAt: null`：唯一索引是全局的，只查存活记录会让预检查
+   * 刻意**不带** `isDel: 0`：唯一索引是全局的，只查存活记录会让预检查
    * 放行、然后由数据库抛 P2002，用户拿到的就是一句没有上下文的冲突提示。
    * 这里提前把「被已删除记录占用」这个原因讲清楚。
    */
   private async assertUsernameAvailable(username: string): Promise<void> {
     const existing = await this.prisma.user.findUnique({
       where: { username },
-      select: { userId: true, deletedAt: true },
+      select: { userId: true, isDel: true },
     });
 
     if (existing === null) {
@@ -326,7 +326,7 @@ export class UserService {
     }
 
     throw BusinessException.conflict(
-      existing.deletedAt === null ? '用户名已存在' : '该用户名已被一条已删除的用户占用，请更换用户名',
+      existing.isDel === 0 ? '用户名已存在' : '该用户名已被一条已删除的用户占用，请更换用户名',
     );
   }
 
@@ -334,7 +334,7 @@ export class UserService {
   private async assertEmailAvailable(email: string): Promise<void> {
     const existing = await this.prisma.user.findUnique({
       where: { email },
-      select: { userId: true, deletedAt: true },
+      select: { userId: true, isDel: true },
     });
 
     if (existing === null) {
@@ -342,7 +342,7 @@ export class UserService {
     }
 
     throw BusinessException.conflict(
-      existing.deletedAt === null ? '邮箱已存在' : '该邮箱已被一条已删除的用户占用，请更换邮箱',
+      existing.isDel === 0 ? '邮箱已存在' : '该邮箱已被一条已删除的用户占用，请更换邮箱',
     );
   }
 }

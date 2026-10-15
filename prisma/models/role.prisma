@@ -16,13 +16,14 @@ model Role {
   isSystem  Boolean   @default(false) @map("is_system")
   createdTime DateTime  @default(now()) @map("created_time") @db.Timestamptz(3)
   updatedTime DateTime  @updatedAt @map("updated_time") @db.Timestamptz(3)
-  deletedTime DateTime? @map("deleted_time") @db.Timestamptz(3)
+  /// 软删除标记：0 未删除，1 已删除
+  isDel       Int       @default(0) @map("is_del") @db.SmallInt
 
   users UserRole[]
   depts RoleDept[]
   menus RoleMenu[]
 
-  @@index([deletedTime])
+  @@index([isDel])
   @@map("sys_role")
 }
 
@@ -77,14 +78,15 @@ model Menu {
   status         Int       @default(1) @db.SmallInt
   createdTime      DateTime  @default(now()) @map("created_time") @db.Timestamptz(3)
   updatedTime      DateTime  @updatedAt @map("updated_time") @db.Timestamptz(3)
-  deletedTime      DateTime? @map("deleted_time") @db.Timestamptz(3)
+  /// 软删除标记：0 未删除，1 已删除
+  isDel            Int       @default(0) @map("is_del") @db.SmallInt
 
   parent   Menu?      @relation("MenuTree", fields: [parentId], references: [menuId], onDelete: Restrict, onUpdate: Cascade)
   children Menu[]     @relation("MenuTree")
   roles    RoleMenu[]
 
   @@index([parentId])
-  @@index([deletedTime])
+  @@index([isDel])
   @@map("sys_menu")
 }
 

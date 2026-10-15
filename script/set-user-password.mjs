@@ -22,7 +22,7 @@ await client.connect();
 try {
   await client.query('SELECT set_config(\'search_path\', quote_ident($1), false)', [schema]);
   const result = await client.query(
-    'UPDATE sys_user SET password = $1 WHERE user_id = $2 AND deleted_at IS NULL RETURNING user_id',
+    'UPDATE sys_user SET password = $1 WHERE user_id = $2 AND is_del = 0 RETURNING user_id',
     [await hashPassword(password), userId],
   );
   if (result.rowCount !== 1) throw new Error('用户不存在或已删除');

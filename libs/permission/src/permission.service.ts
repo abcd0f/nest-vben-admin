@@ -9,8 +9,8 @@ export class PermissionService {
   async getUserPermissionCodes(userId: bigint): Promise<string[]> {
     const rows = await this.prisma.roleMenu.findMany({
       where: {
-        role: { users: { some: { userId, user: { status: 1, deletedAt: null } } }, status: 1, deletedAt: null },
-        menu: { menuType: 'ACTION', status: 1, deletedAt: null, permissionCode: { not: null } },
+        role: { users: { some: { userId, user: { status: 1, isDel: 0 } } }, status: 1, isDel: 0 },
+        menu: { menuType: 'ACTION', status: 1, isDel: 0, permissionCode: { not: null } },
       },
       select: { menu: { select: { permissionCode: true } } },
     });
@@ -20,8 +20,8 @@ export class PermissionService {
   async hasPermission(userId: bigint, permissionCode: string): Promise<boolean> {
     const row = await this.prisma.roleMenu.findFirst({
       where: {
-        role: { users: { some: { userId } }, status: 1, deletedAt: null },
-        menu: { permissionCode, menuType: 'ACTION', status: 1, deletedAt: null },
+        role: { users: { some: { userId } }, status: 1, isDel: 0 },
+        menu: { permissionCode, menuType: 'ACTION', status: 1, isDel: 0 },
       },
       select: { roleId: true },
     });
@@ -29,7 +29,7 @@ export class PermissionService {
   }
 
   async isSystemAdmin(userId: bigint): Promise<boolean> {
-    const role = await this.prisma.userRole.findFirst({ where: { userId, role: { isSystem: true, status: 1, deletedAt: null } } });
+    const role = await this.prisma.userRole.findFirst({ where: { userId, role: { isSystem: true, status: 1, isDel: 0 } } });
     return role !== null;
   }
 
@@ -37,16 +37,16 @@ export class PermissionService {
     const roles = await this.prisma.userRole.findMany({
       where: {
         userId,
-        user: { status: 1, deletedAt: null },
+        user: { status: 1, isDel: 0 },
         role: {
           status: 1,
-          deletedAt: null,
-          menus: { some: { menu: { permissionCode, menuType: 'ACTION', status: 1, deletedAt: null } } },
+          isDel: 0,
+          menus: { some: { menu: { permissionCode, menuType: 'ACTION', status: 1, isDel: 0 } } },
         },
       },
       select: { role: { select: { dataScope: true, depts: { select: { deptId: true } } } } },
     });
-    const user = await this.prisma.user.findFirst({ where: { userId, status: 1, deletedAt: null }, select: { deptId: true } });
+    const user = await this.prisma.user.findFirst({ where: { userId, status: 1, isDel: 0 }, select: { deptId: true } });
     const deptIds = new Set<bigint>();
     let all = false;
     let self = false;
@@ -67,7 +67,7 @@ export class PermissionService {
     const result = [root];
     const queue = [root];
     while (queue.length > 0) {
-      const children = await this.prisma.dept.findMany({ where: { parentId: { in: queue.splice(0) }, status: 1, deletedAt: null }, select: { deptId: true } });
+      const children = await this.prisma.dept.findMany({ where: { parentId: { in: queue.splice(0) }, status: 1, isDel: 0 }, select: { deptId: true } });
       result.push(...children.map((child) => child.deptId));
       queue.push(...children.map((child) => child.deptId));
     }
@@ -77,8 +77,8 @@ export class PermissionService {
   async getUserMenus(userId: bigint) {
     return this.prisma.roleMenu.findMany({
       where: {
-        role: { users: { some: { userId, user: { status: 1, deletedAt: null } } }, status: 1, deletedAt: null },
-        menu: { status: 1, deletedAt: null },
+        role: { users: { some: { userId, user: { status: 1, isDel: 0 } } }, status: 1, isDel: 0 },
+        menu: { status: 1, isDel: 0 },
       },
       distinct: ['menuId'],
       orderBy: [{ menu: { sortOrder: 'asc' } }, { menuId: 'asc' }],

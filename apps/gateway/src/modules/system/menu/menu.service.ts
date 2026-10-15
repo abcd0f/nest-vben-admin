@@ -2,23 +2,8 @@ import { toDto } from '@app/common';
 import { BusinessException } from '@app/core';
 import { Prisma, PrismaService } from '@app/database';
 import { Injectable } from '@nestjs/common';
-import { Exclude, Expose, Transform } from 'class-transformer';
-import { MenuDto, MenuType, UpdateMenuDto } from './menu.dto.js';
-
-@Exclude()
-export class MenuResponseDto {
-  @Expose() @Transform(({ value }) => value.toString()) menuId!: string;
-  @Expose() @Transform(({ value }) => value?.toString() ?? null) parentId!: string | null;
-  @Expose() menuType!: MenuType;
-  @Expose() menuName!: string;
-  @Expose() routePath!: string | null;
-  @Expose() component!: string | null;
-  @Expose() permissionCode!: string | null;
-  @Expose() sortOrder!: number;
-  @Expose() status!: number;
-  @Expose() createdAt!: Date;
-  @Expose() updatedAt!: Date;
-}
+import { MenuDto, MenuType, UpdateMenuDto } from './dto/menu.dto.js';
+import { MenuResponseDto } from './dto/response.dto.js';
 
 @Injectable()
 export class MenuService {
@@ -26,14 +11,14 @@ export class MenuService {
 
   async findAll() {
     const rows = await this.prisma.menu.findMany({
-      where: { deletedAt: null },
+      where: { isDel: 0 },
       orderBy: [{ sortOrder: 'asc' }, { menuId: 'asc' }],
     });
     return rows.map((row) => toDto(MenuResponseDto, row));
   }
 
   async findOne(menuId: bigint) {
-    const row = await this.prisma.menu.findFirst({ where: { menuId, deletedAt: null } });
+    const row = await this.prisma.menu.findFirst({ where: { menuId, isDel: 0 } });
     if (row === null) throw BusinessException.notFound('菜单不存在');
     return toDto(MenuResponseDto, row)!;
   }
@@ -54,7 +39,7 @@ export class MenuService {
   }
 
   async update(menuId: bigint, dto: UpdateMenuDto) {
-    const current = await this.prisma.menu.findFirst({ where: { menuId, deletedAt: null } });
+    const current = await this.prisma.menu.findFirst({ where: { menuId, isDel: 0 } });
     if (current === null) throw BusinessException.notFound('菜单不存在');
     const data = await this.prepareData(dto, menuId, current);
     const row = await this.prisma.menu.update({ where: { menuId }, data });
@@ -62,14 +47,14 @@ export class MenuService {
   }
 
   async remove(menuId: bigint) {
-    const current = await this.prisma.menu.findFirst({ where: { menuId, deletedAt: null } });
+    const current = await this.prisma.menu.findFirst({ where: { menuId, isDel: 0 } });
     if (current === null) throw BusinessException.notFound('菜单不存在');
     const [children, roles] = await Promise.all([
-      this.prisma.menu.count({ where: { parentId: menuId, deletedAt: null } }),
+      this.prisma.menu.count({ where: { parentId: menuId, isDel: 0 } }),
       this.prisma.roleMenu.count({ where: { menuId } }),
     ]);
     if (children > 0 || roles > 0) throw BusinessException.conflict('菜单仍有子节点或角色授权，不能删除');
-    await this.prisma.menu.update({ where: { menuId }, data: { deletedAt: new Date() } });
+    await this.prisma.menu.update({ where: { menuId }, data: { isDel: 1 } });
   }
 
   private async prepareData(
@@ -102,7 +87,7 @@ export class MenuService {
     }
     if (menuId !== undefined && menuType !== undefined) {
       const children = await this.prisma.menu.findMany({
-        where: { parentId: menuId, deletedAt: null },
+        where: { parentId: menuId, isDel: 0 },
         select: { menuType: true },
       });
       const validChildren = children.every(
@@ -125,13 +110,13 @@ export class MenuService {
   }
 
   private async assertActiveParent(menuId: bigint) {
-    const row = await this.prisma.menu.findFirst({ where: { menuId, status: 1, deletedAt: null } });
+    const row = await this.prisma.menu.findFirst({ where: { menuId, status: 1, isDel: 0 } });
     if (row === null) throw BusinessException.badRequest('上级菜单不存在、已停用或已删除');
   }
 
   private async hasDescendant(candidate: bigint, ancestor: bigint): Promise<boolean> {
     const children = await this.prisma.menu.findMany({
-      where: { parentId: ancestor, deletedAt: null },
+      where: { parentId: ancestor, isDel: 0 },
       select: { menuId: true },
     });
     for (const child of children) {

@@ -35,7 +35,7 @@ export class AuthService {
   verifyPassword = verifyPassword;
 
   async login(username: string, password: string) {
-    const user = await this.prisma.user.findFirst({ where: { username, status: 1, deletedAt: null } });
+    const user = await this.prisma.user.findFirst({ where: { username, status: 1, isDel: 0 } });
     if (!user || !(await verifyPassword(password, user.password))) {
       throw BusinessException.of(ResultCode.LOGIN_FAILED);
     }
@@ -135,7 +135,7 @@ export class AuthService {
   }
 
   async assertActiveUser(userId: bigint) {
-    const user = await this.prisma.user.findFirst({ where: { userId, status: 1, deletedAt: null } });
+    const user = await this.prisma.user.findFirst({ where: { userId, status: 1, isDel: 0 } });
     if (!user) throw BusinessException.unauthorized();
     return user;
   }

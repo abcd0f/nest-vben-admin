@@ -38,7 +38,7 @@ export function normalizePage(query: PageQuery = {}): {
  * @example
  * return paginate(query, ({ skip, take }) =>
  *   Promise.all([
- *     this.prisma.user.findMany({ skip, take, orderBy: { createdAt: 'desc' } }),
+ *     this.prisma.user.findMany({ skip, take, orderBy: { createdTime: 'desc' } }),
  *     this.prisma.user.count(),
  *   ]),
  * );

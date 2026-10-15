@@ -1,7 +1,7 @@
 import { BigIntIdPipe } from '@app/core';
 import { Permission } from '@app/permission';
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { PostDto } from './post.dto.js';
+import { PostDto } from './dto/post.dto.js';
 import { PostService } from './post.service.js';
 
 @Controller('system/post')

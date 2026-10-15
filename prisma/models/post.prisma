@@ -5,11 +5,12 @@ model Post {
   postName  String    @map("post_name") @db.VarChar(64)
   sortOrder Int       @default(0) @map("sort_order") @db.SmallInt
   status    Int       @default(1) @db.SmallInt
-  createdTime DateTime  @default(now()) @map("created_time") @db.Timestamptz(3)
-  updatedTime DateTime  @updatedAt @map("updated_time") @db.Timestamptz(3)
-  deletedTime DateTime? @map("deleted_time") @db.Timestamptz(3)
+  createdTime DateTime @default(now()) @map("created_time") @db.Timestamptz(3)
+  updatedTime DateTime @updatedAt @map("updated_time") @db.Timestamptz(3)
+  /// 软删除标记：0 未删除，1 已删除
+  isDel       Int      @default(0) @map("is_del") @db.SmallInt
   users UserPost[]
 
-  @@index([deletedTime])
+  @@index([isDel])
   @@map("sys_post")
 }

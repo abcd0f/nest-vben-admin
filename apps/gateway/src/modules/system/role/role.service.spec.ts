@@ -55,7 +55,7 @@ describe('roleService', () => {
 
   it('rejects department assignments for non-custom roles', async () => {
     const prisma = {
-      role: { findFirst: vi.fn().mockResolvedValue({ roleId: 1n, dataScope: DataScope.DEPT, deletedAt: null }) },
+      role: { findFirst: vi.fn().mockResolvedValue({ roleId: 1n, dataScope: DataScope.DEPT, isDel: 0 }) },
     } as unknown as PrismaService;
 
     await expect(new RoleService(prisma).replaceRoleDepts(1n, { ids: ['2'] })).rejects.toBeInstanceOf(BusinessException);
@@ -64,7 +64,7 @@ describe('roleService', () => {
   it('replaces role menus only after validating every active menu', async () => {
     const tx = { roleMenu: { deleteMany: vi.fn(), createMany: vi.fn() } };
     const prisma = {
-      role: { findFirst: vi.fn().mockResolvedValue({ roleId: 1n, status: 1, deletedAt: null }) },
+      role: { findFirst: vi.fn().mockResolvedValue({ roleId: 1n, status: 1, isDel: 0 }) },
       menu: { count: vi.fn().mockResolvedValue(2) },
       $transaction: vi.fn((callback) => callback(tx)),
     } as unknown as PrismaService;
@@ -75,7 +75,7 @@ describe('roleService', () => {
 
   it('does not start a role menu replacement when a target is inactive', async () => {
     const prisma = {
-      role: { findFirst: vi.fn().mockResolvedValue({ roleId: 1n, status: 1, deletedAt: null }) },
+      role: { findFirst: vi.fn().mockResolvedValue({ roleId: 1n, status: 1, isDel: 0 }) },
       menu: { count: vi.fn().mockResolvedValue(1) },
       $transaction: vi.fn(),
     } as unknown as PrismaService;

@@ -7,13 +7,14 @@ model Dept {
   status    Int       @default(1) @db.SmallInt
   createdTime DateTime  @default(now()) @map("created_time") @db.Timestamptz(3)
   updatedTime DateTime  @updatedAt @map("updated_time") @db.Timestamptz(3)
-  deletedTime DateTime? @map("deleted_time") @db.Timestamptz(3)
+  /// 软删除标记：0 未删除，1 已删除
+  isDel     Int         @default(0) @map("is_del") @db.SmallInt
   parent    Dept?     @relation("DeptTree", fields: [parentId], references: [deptId], onDelete: Restrict, onUpdate: Cascade)
   children  Dept[]    @relation("DeptTree")
   users     User[]
   roleDepts RoleDept[]
 
   @@index([parentId])
-  @@index([deletedTime])
+  @@index([isDel])
   @@map("sys_dept")
 }

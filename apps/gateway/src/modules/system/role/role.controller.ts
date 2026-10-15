@@ -1,7 +1,7 @@
 import { BigIntIdPipe } from '@app/core';
 import { Permission, SystemAdmin } from '@app/permission';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put } from '@nestjs/common';
-import { CreateRoleDto, ReplaceIdsDto, UpdateRoleDto } from './role.dto.js';
+import { CreateRoleDto, ReplaceIdsDto, UpdateRoleDto } from './dto/role.dto.js';
 import { RoleService } from './role.service.js';
 
 @Controller('system/role')

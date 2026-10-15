@@ -1,7 +1,7 @@
 import { BigIntIdPipe } from '@app/core';
 import { Permission, SystemAdmin } from '@app/permission';
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { MenuDto, UpdateMenuDto } from './menu.dto.js';
+import { MenuDto, UpdateMenuDto } from './dto/menu.dto.js';
 import { MenuService } from './menu.service.js';
 
 @Controller('system/menu')
