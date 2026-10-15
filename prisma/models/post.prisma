@@ -5,9 +5,9 @@ model Post {
   postName  String    @map("post_name") @db.VarChar(64)
   sortOrder Int       @default(0) @map("sort_order") @db.SmallInt
   status    Int       @default(1) @db.SmallInt
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(3)
+  createdTime DateTime  @default(now()) @map("created_time") @db.Timestamptz(3)
+  updatedTime DateTime  @updatedAt @map("updated_time") @db.Timestamptz(3)
+  deletedTime DateTime? @map("deleted_time") @db.Timestamptz(3)
   users UserPost[]
 
   @@index([deletedAt])

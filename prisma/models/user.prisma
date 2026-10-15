@@ -38,13 +38,13 @@ model User {
   loginDate DateTime? @map("login_date") @db.Timestamptz(3)
 
   /// 用户记录创建时间
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  createdTime DateTime @default(now()) @map("created_time") @db.Timestamptz(3)
 
   /// 用户记录最后更新时间
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  updatedTime DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   /// 用户软删除时间
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(3)
+  deletedTime DateTime? @map("deleted_time") @db.Timestamptz(3)
 
   dept Dept? @relation(fields: [deptId], references: [deptId], onDelete: Restrict, onUpdate: Cascade)
   posts UserPost[]
