@@ -1,16 +1,27 @@
 /// 系统岗位模型
+/// 对应数据库表 sys_post
 model Post {
+  /// 岗位唯一标识，id 自增
   postId    BigInt    @id @default(autoincrement()) @map("post_id")
+  /// 岗位编码，全局唯一
   postCode  String    @unique @map("post_code") @db.VarChar(64)
+  /// 岗位名称
   postName  String    @map("post_name") @db.VarChar(64)
+  /// 同级排序号，越小越靠前
   sortOrder Int       @default(0) @map("sort_order") @db.SmallInt
+  /// 岗位状态 0 禁用 1 正常
   status    Int       @default(1) @db.SmallInt
+  /// 岗位记录创建时间
   createdTime DateTime @default(now()) @map("created_time") @db.Timestamptz(3)
+  /// 岗位记录最后更新时间
   updatedTime DateTime @updatedAt @map("updated_time") @db.Timestamptz(3)
   /// 软删除标记：0 未删除，1 已删除
   isDel       Int      @default(0) @map("is_del") @db.SmallInt
+  /// 关联的用户-岗位关系（多对多中间表）
   users UserPost[]
 
+  /// 为软删除标记建立索引
   @@index([isDel])
+  /// 指定数据库表名为 sys_post
   @@map("sys_post")
 }

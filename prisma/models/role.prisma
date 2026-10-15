@@ -1,102 +1,181 @@
+/// 数据权限范围
 enum DataScope {
+  /// 全部数据权限
   ALL
+  /// 本部门及以下数据权限
   DEPT_AND_CHILDREN
+  /// 本部门数据权限
   DEPT
+  /// 自定义数据权限（由角色-部门关联表指定）
   CUSTOM
+  /// 仅本人数据权限
   SELF
 }
 
-/// 系统角色
+/// 系统角色模型
+/// 对应数据库表 sys_role
 model Role {
+  /// 角色唯一标识，id 自增
   roleId    BigInt    @id @default(autoincrement()) @map("role_id")
+  /// 角色编码，全局唯一，用于程序内鉴权
   roleCode  String    @unique @map("role_code") @db.VarChar(64)
+  /// 角色名称
   roleName  String    @map("role_name") @db.VarChar(64)
+  /// 数据权限范围，默认仅本人
   dataScope DataScope @default(SELF) @map("data_scope")
+  /// 角色状态 0 禁用 1 正常
   status    Int       @default(1) @db.SmallInt
+  /// 是否系统内置角色：内置角色不允许删除
   isSystem  Boolean   @default(false) @map("is_system")
+  /// 角色记录创建时间
   createdTime DateTime  @default(now()) @map("created_time") @db.Timestamptz(3)
+  /// 角色记录最后更新时间
   updatedTime DateTime  @updatedAt @map("updated_time") @db.Timestamptz(3)
   /// 软删除标记：0 未删除，1 已删除
   isDel       Int       @default(0) @map("is_del") @db.SmallInt
 
+  /// 关联的用户-角色关系（多对多中间表）
   users UserRole[]
+  /// 关联的角色-部门关系（自定义数据权限用）
   depts RoleDept[]
+  /// 关联的角色-菜单关系（菜单权限用）
   menus RoleMenu[]
 
+  /// 为软删除标记建立索引
   @@index([isDel])
+  /// 指定数据库表名为 sys_role
   @@map("sys_role")
 }
 
+/// 用户-岗位关联模型（多对多中间表）
+/// 对应数据库表 sys_user_post
 model UserPost {
+  /// 用户 ID
   userId BigInt @map("user_id")
+  /// 岗位 ID
   postId BigInt @map("post_id")
+  /// 关联的用户，用户删除时级联删除该关系
   user   User   @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: Cascade)
+  /// 关联的岗位，存在关联关系时禁止删除岗位
   post   Post   @relation(fields: [postId], references: [postId], onDelete: Restrict, onUpdate: Cascade)
 
+  /// 联合主键：用户 + 岗位
   @@id([userId, postId])
+  /// 为岗位外键建立索引
   @@index([postId])
+  /// 指定数据库表名为 sys_user_post
   @@map("sys_user_post")
 }
 
+/// 用户-角色关联模型（多对多中间表）
+/// 对应数据库表 sys_user_role
 model UserRole {
+  /// 用户 ID
   userId BigInt @map("user_id")
+  /// 角色 ID
   roleId BigInt @map("role_id")
+  /// 关联的用户，用户删除时级联删除该关系
   user   User   @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: Cascade)
+  /// 关联的角色，存在关联关系时禁止删除角色
   role   Role   @relation(fields: [roleId], references: [roleId], onDelete: Restrict, onUpdate: Cascade)
 
+  /// 联合主键：用户 + 角色
   @@id([userId, roleId])
+  /// 为角色外键建立索引
   @@index([roleId])
+  /// 指定数据库表名为 sys_user_role
   @@map("sys_user_role")
 }
 
+/// 角色-部门关联模型（用于角色自定义数据权限）
+/// 对应数据库表 sys_role_dept
 model RoleDept {
+  /// 角色 ID
   roleId BigInt @map("role_id")
+  /// 部门 ID
   deptId BigInt @map("dept_id")
+  /// 关联的角色，角色删除时级联删除该关系
   role   Role   @relation(fields: [roleId], references: [roleId], onDelete: Cascade, onUpdate: Cascade)
+  /// 关联的部门，存在关联关系时禁止删除部门
   dept   Dept   @relation(fields: [deptId], references: [deptId], onDelete: Restrict, onUpdate: Cascade)
 
+  /// 联合主键：角色 + 部门
   @@id([roleId, deptId])
+  /// 为部门外键建立索引
   @@index([deptId])
+  /// 指定数据库表名为 sys_role_dept
   @@map("sys_role_dept")
 }
 
+/// 菜单类型
 enum MenuType {
+  /// 目录
   DIRECTORY
+  /// 菜单
   MENU
+  /// 按钮/操作权限点
   ACTION
 }
 
+/// 系统菜单/权限模型
+/// 对应数据库表 sys_menu
 model Menu {
+  /// 菜单唯一标识，id 自增
   menuId         BigInt    @id @default(autoincrement()) @map("menu_id")
+  /// 父菜单 ID，可为空（顶级菜单为空）
   parentId       BigInt?   @map("parent_id")
+  /// 菜单类型：目录 / 菜单 / 操作权限点
   menuType       MenuType  @map("menu_type")
+  /// 菜单名称
   menuName       String    @map("menu_name") @db.VarChar(64)
+  /// 前端路由路径，可为空（操作权限点无路由）
   routePath      String?   @map("route_path") @db.VarChar(255)
+  /// 前端组件路径，可为空
   component      String?   @db.VarChar(255)
+  /// 权限标识码，全局唯一，如 system:user:list
   permissionCode String?   @unique @map("permission_code") @db.VarChar(128)
+  /// 同级排序号，越小越靠前
   sortOrder      Int       @default(0) @map("sort_order") @db.SmallInt
+  /// 菜单状态 0 禁用 1 正常
   status         Int       @default(1) @db.SmallInt
+  /// 菜单记录创建时间
   createdTime      DateTime  @default(now()) @map("created_time") @db.Timestamptz(3)
+  /// 菜单记录最后更新时间
   updatedTime      DateTime  @updatedAt @map("updated_time") @db.Timestamptz(3)
   /// 软删除标记：0 未删除，1 已删除
   isDel            Int       @default(0) @map("is_del") @db.SmallInt
 
+  /// 关联的父菜单（自关联，多对一）
   parent   Menu?      @relation("MenuTree", fields: [parentId], references: [menuId], onDelete: Restrict, onUpdate: Cascade)
+  /// 关联的子菜单（自关联，一对多）
   children Menu[]     @relation("MenuTree")
+  /// 关联的角色-菜单关系（菜单权限用）
   roles    RoleMenu[]
 
+  /// 为父菜单外键建立索引
   @@index([parentId])
+  /// 为软删除标记建立索引
   @@index([isDel])
+  /// 指定数据库表名为 sys_menu
   @@map("sys_menu")
 }
 
+/// 角色-菜单关联模型（菜单权限）
+/// 对应数据库表 sys_role_menu
 model RoleMenu {
+  /// 角色 ID
   roleId BigInt @map("role_id")
+  /// 菜单 ID
   menuId BigInt @map("menu_id")
+  /// 关联的角色，角色删除时级联删除该关系
   role   Role   @relation(fields: [roleId], references: [roleId], onDelete: Cascade, onUpdate: Cascade)
+  /// 关联的菜单，菜单删除时级联删除该关系
   menu   Menu   @relation(fields: [menuId], references: [menuId], onDelete: Cascade, onUpdate: Cascade)
 
+  /// 联合主键：角色 + 菜单
   @@id([roleId, menuId])
+  /// 为菜单外键建立索引
   @@index([menuId])
+  /// 指定数据库表名为 sys_role_menu
   @@map("sys_role_menu")
 }
