@@ -1,3 +1,4 @@
+import { AuthService } from '@app/auth';
 import { toDto, toPageDto } from '@app/common';
 import { BusinessException } from '@app/core';
 import { paginate, Prisma, PrismaService } from '@app/database';
@@ -64,14 +65,16 @@ function toUniqueViolation(error: unknown, message: string): BusinessException |
  * 约定（与 `prisma/schema.prisma` 的 `User` 模型一一对应）：
  * - **软删除**：`remove()` 只写 `deletedAt`，不物理删除。所有查询都带
  *   `deletedAt: null`，被删数据默认不可见；
- * - **密码不脱敏**：本模块不做密码哈希，`password` 按 DTO 原样落库。
- *   出参一律用公共 DTO 转换器，`password` / `deletedAt` 不出接口；
+ * - **密码哈希**：创建时存储强哈希，出参不含 `password` / `deletedAt`；
  * - **越界字段不进库**：入参只取 DTO 上声明过的字段，不把 `dto` 直接展开给 Prisma，
  *   否则全局校验管道被绕过（或将来有人关掉 `whitelist`）时会变成批量赋值漏洞。
  */
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly auth: AuthService,
+  ) {}
 
   /** 新增用户。用户名 / 邮箱冲突返回 409。 */
   async create(dto: CreateUserDto): Promise<UserResponseDto> {
@@ -81,11 +84,13 @@ export class UserService {
       await this.assertEmailAvailable(dto.email);
     }
 
+    const passwordHash = await this.auth.hashPassword(dto.password);
+
     try {
       const user = await this.prisma.user.create({
         data: {
           username: dto.username,
-          password: dto.password,
+          password: passwordHash,
           email: dto.email ?? null,
           nickName: dto.nickName ?? null,
         },
@@ -117,7 +122,7 @@ export class UserService {
   }
 
   /** 查询用户详情，不存在（或已软删除）返回 404。 */
-  async findOne(userId: number): Promise<UserResponseDto> {
+  async findOne(userId: bigint): Promise<UserResponseDto> {
     const user = await this.prisma.user.findFirst({ where: { userId, deletedAt: null } });
 
     if (user === null) {
@@ -128,14 +133,14 @@ export class UserService {
   }
 
   /**
-   * 更新用户。只更新显式传入的字段；`password` 传了才更新。
+   * 更新用户。只更新显式传入的资料字段。
    *
    * `null` 的语义按列是否可空区分（对齐 `schema.prisma`）：
    * - `email` / `nickName` 是 `String?`，传 `null` 表示**清空该列**；
-   * - `username` / `status` / `password` 是 NOT NULL，传 `null` 视为**未传**
+   * - `username` / `status` 是 NOT NULL，传 `null` 视为**未传**
    *   （忽略）。它们没有「清空」这个状态，把 `null` 写进 Prisma 只会换来一个 500。
    */
-  async update(userId: number, dto: UpdateUserDto): Promise<UserResponseDto> {
+  async update(userId: bigint, dto: UpdateUserDto): Promise<UserResponseDto> {
     const current = await this.prisma.user.findFirst({ where: { userId, deletedAt: null } });
 
     if (current === null) {
@@ -168,10 +173,6 @@ export class UserService {
     if (isPresent(dto.status)) {
       data.status = dto.status;
     }
-    if (isPresent(dto.password)) {
-      data.password = dto.password;
-    }
-
     try {
       const user = await this.prisma.user.update({ where: { userId }, data });
 
@@ -194,7 +195,7 @@ export class UserService {
    * 若要允许复用，应改为「删除时把 username 改写为 `name#<uuid>`」的部分索引方案，
    * 那是一次 schema 变更，不在本次范围。
    */
-  async remove(userId: number): Promise<void> {
+  async remove(userId: bigint): Promise<void> {
     const current = await this.prisma.user.findFirst({ where: { userId, deletedAt: null } });
 
     if (current === null) {

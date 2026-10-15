@@ -1,5 +1,5 @@
 import { toOptionalNumber } from '@app/common';
-import { PartialType } from '@nestjs/swagger';
+import { OmitType, PartialType } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsEnum, IsOptional } from 'class-validator';
 import { CreateUserDto } from './create-user.dto.js';
@@ -12,10 +12,7 @@ import { UserStatus } from './response.dto.js';
  * `CreateUserDto` 是**单一事实来源**，这里再写一份必然漂移——
  * 典型症状是「新增时限制 64 位、更新时忘了加」，超长值只在更新路径上炸。
  *
- * 关于 `password`：本 DTO 保留可选的 `password`，`UserService.update()`
- * 会在检测到该字段时直接更新密码。若业务上要求「改密码必须校验旧密码」，
- * 应另开 `PATCH /system/user/:userId/password` 端点，不要在这个通用更新接口里
- * 掺入旧密码校验——那会让「只改昵称」的请求也被迫携带密码。
+ * `password` 不属于通用更新；管理员重置和用户自助修改使用独立流程。
  *
  * 关于 `status`：它**不在** `CreateUserDto` 里，因为 `schema.prisma` 的
  * `status Int @default(1)` 已经把新建时的取值定死了（新增接口不接受该字段，
@@ -23,7 +20,7 @@ import { UserStatus } from './response.dto.js';
  * 所以必须在这里显式补上——否则「编辑用户时改状态」要么编译不过，
  * 要么被静默丢弃。
  */
-export class UpdateUserDto extends PartialType(CreateUserDto) {
+export class UpdateUserDto extends PartialType(OmitType(CreateUserDto, ['password'] as const)) {
   /**
    * 状态：1 正常，0 停用。null / 空串视为未传
    * @example 1

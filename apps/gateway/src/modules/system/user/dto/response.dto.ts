@@ -40,7 +40,8 @@ export enum UserStatus {
 export class UserResponseDto {
   /** 用户 ID */
   @Expose()
-  userId!: number;
+  @Transform(({ value }) => value.toString())
+  userId!: string;
 
   /** 用户名 */
   @Expose()

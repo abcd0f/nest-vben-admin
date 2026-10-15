@@ -4,6 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto.js';
 import { QueryUserDto } from './dto/query-user.dto.js';
 import { UserPageDto, UserResponseDto } from './dto/response.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
+import { UserIdPipe } from './user-id.pipe.js';
 import { UserService } from './user.service.js';
 
 /**
@@ -27,7 +28,7 @@ export class UserController {
   /**
    * 新增用户
    *
-   * @remarks 密码按原样落库，不做哈希。用户名、邮箱全局唯一，
+   * @remarks 密码经过强哈希后落库。用户名、邮箱全局唯一，
    * 冲突时返回业务码 409。入参约束见 `CreateUserDto`，违反约束返回 422 + 字段级 `details`。
    */
   @Post()
@@ -54,21 +55,21 @@ export class UserController {
    * @remarks 返回体不含 `password`、`deletedAt`。目标不存在或已软删除时返回 404。
    */
   @Get(':userId')
-  findOne(@Param('userId') userId: string): Promise<UserResponseDto> {
-    return this.userService.findOne(+userId);
+  findOne(@Param('userId', UserIdPipe) userId: bigint): Promise<UserResponseDto> {
+    return this.userService.findOne(userId);
   }
 
   /**
    * 更新用户
    *
-   * @remarks PATCH 语义：只更新请求体里出现的字段。传了 `password` 会直接更新密码；
+   * @remarks PATCH 语义：只更新请求体里出现的字段；密码不通过通用更新接口修改。
    * 用户名 / 邮箱改动时会重新做唯一性校验，且不会与自身当前值冲突。
    * `email` / `nickName` 可空，传 `null` 表示清空该列；`username` / `status` 是
    * NOT NULL 列，传 `null` 会被忽略（视为未传）。
    */
   @Patch(':userId')
-  update(@Param('userId') userId: string, @Body() updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
-    return this.userService.update(+userId, updateUserDto);
+  update(@Param('userId', UserIdPipe) userId: bigint, @Body() updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
+    return this.userService.update(userId, updateUserDto);
   }
 
   /**
@@ -78,7 +79,7 @@ export class UserController {
    * 注意：被删除的用户名 / 邮箱仍占用唯一索引，重建同名用户会被拒绝。
    */
   @Delete(':userId')
-  remove(@Param('userId') userId: string): Promise<void> {
-    return this.userService.remove(+userId);
+  remove(@Param('userId', UserIdPipe) userId: bigint): Promise<void> {
+    return this.userService.remove(userId);
   }
 }
