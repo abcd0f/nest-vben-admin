@@ -51,7 +51,7 @@ model User {
   roles UserRole[]
 
   /// 为软删除时间建立索引
-  @@index([deletedAt])
+  @@index([deletedTime])
   @@index([deptId])
   /// 指定数据库表名为 sys_user
   @@map("sys_user")

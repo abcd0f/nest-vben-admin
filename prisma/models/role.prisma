@@ -22,7 +22,7 @@ model Role {
   depts RoleDept[]
   menus RoleMenu[]
 
-  @@index([deletedAt])
+  @@index([deletedTime])
   @@map("sys_role")
 }
 
@@ -84,7 +84,7 @@ model Menu {
   roles    RoleMenu[]
 
   @@index([parentId])
-  @@index([deletedAt])
+  @@index([deletedTime])
   @@map("sys_menu")
 }
 

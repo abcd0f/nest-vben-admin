@@ -1,7 +1,7 @@
-import { UserIdPipe } from './user-id.pipe.js';
+import { BigIntIdPipe } from './bigint-id.pipe.js';
 
-describe('userIdPipe', () => {
-  const pipe = new UserIdPipe();
+describe('bigIntIdPipe', () => {
+  const pipe = new BigIntIdPipe();
 
   it('keeps IDs above Number.MAX_SAFE_INTEGER exact', () => {
     expect(pipe.transform('9007199254740993')).toBe(9007199254740993n);

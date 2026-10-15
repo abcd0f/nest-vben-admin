@@ -10,6 +10,6 @@ model Post {
   deletedTime DateTime? @map("deleted_time") @db.Timestamptz(3)
   users UserPost[]
 
-  @@index([deletedAt])
+  @@index([deletedTime])
   @@map("sys_post")
 }

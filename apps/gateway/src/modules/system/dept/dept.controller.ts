@@ -1,6 +1,6 @@
+import { BigIntIdPipe } from '@app/core';
 import { Permission } from '@app/permission';
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { UserIdPipe } from '../user/user-id.pipe.js';
 import { DeptService } from './dept.service.js';
 import { DeptDto } from './dto.js';
 
@@ -15,7 +15,7 @@ export class DeptController {
 
   @Get(':deptId')
   @Permission('system:dept:query')
-  findOne(@Param('deptId', UserIdPipe) id: bigint) {
+  findOne(@Param('deptId', BigIntIdPipe) id: bigint) {
     return this.service.findOne(id);
   }
 
@@ -27,13 +27,13 @@ export class DeptController {
 
   @Patch(':deptId')
   @Permission('system:dept:update')
-  update(@Param('deptId', UserIdPipe) id: bigint, @Body() dto: Partial<DeptDto>) {
+  update(@Param('deptId', BigIntIdPipe) id: bigint, @Body() dto: Partial<DeptDto>) {
     return this.service.update(id, dto);
   }
 
   @Delete(':deptId')
   @Permission('system:dept:delete')
-  remove(@Param('deptId', UserIdPipe) id: bigint) {
+  remove(@Param('deptId', BigIntIdPipe) id: bigint) {
     return this.service.remove(id);
   }
 }

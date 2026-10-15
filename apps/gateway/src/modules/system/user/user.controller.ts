@@ -1,4 +1,5 @@
 import { CurrentUser } from '@app/auth';
+import { BigIntIdPipe } from '@app/core';
 import { Permission, SystemAdmin } from '@app/permission';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
 import { ResetPasswordDto } from '../../auth/auth.dto.js';
@@ -9,7 +10,6 @@ import { CreateUserDto } from './dto/create-user.dto.js';
 import { QueryUserDto } from './dto/query-user.dto.js';
 import { UserPageDto, UserResponseDto } from './dto/response.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
-import { UserIdPipe } from './user-id.pipe.js';
 import { UserService } from './user.service.js';
 
 /**
@@ -36,14 +36,14 @@ export class UserController {
   @Put(':userId/posts')
   @Permission('system:user:assign-posts')
   @SystemAdmin()
-  replacePosts(@Param('userId', UserIdPipe) userId: bigint, @Body() dto: ReplaceIdsDto) {
+  replacePosts(@Param('userId', BigIntIdPipe) userId: bigint, @Body() dto: ReplaceIdsDto) {
     return this.roleService.replaceUserPosts(userId, dto);
   }
 
   @Put(':userId/roles')
   @Permission('system:user:assign-roles')
   @SystemAdmin()
-  replaceRoles(@Param('userId', UserIdPipe) userId: bigint, @Body() dto: ReplaceIdsDto) {
+  replaceRoles(@Param('userId', BigIntIdPipe) userId: bigint, @Body() dto: ReplaceIdsDto) {
     return this.roleService.replaceUserRoles(userId, dto);
   }
 
@@ -81,7 +81,7 @@ export class UserController {
   @Get(':userId')
   @Permission('system:user:query')
   findOne(
-    @Param('userId', UserIdPipe) userId: bigint,
+    @Param('userId', BigIntIdPipe) userId: bigint,
     @CurrentUser() current: { userId: bigint },
   ): Promise<UserResponseDto> {
     return this.userService.findOne(userId, current.userId);
@@ -98,7 +98,7 @@ export class UserController {
   @Patch(':userId')
   @Permission('system:user:update')
   update(
-    @Param('userId', UserIdPipe) userId: bigint,
+    @Param('userId', BigIntIdPipe) userId: bigint,
     @Body() updateUserDto: UpdateUserDto,
     @CurrentUser() current: { userId: bigint },
   ): Promise<UserResponseDto> {
@@ -113,14 +113,14 @@ export class UserController {
    */
   @Delete(':userId')
   @Permission('system:user:delete')
-  remove(@Param('userId', UserIdPipe) userId: bigint, @CurrentUser() current: { userId: bigint }): Promise<void> {
+  remove(@Param('userId', BigIntIdPipe) userId: bigint, @CurrentUser() current: { userId: bigint }): Promise<void> {
     return this.userService.remove(userId, current.userId);
   }
 
   @Patch(':userId/password/reset')
   @Permission('system:user:reset-password')
   @SystemAdmin()
-  resetPassword(@Param('userId', UserIdPipe) userId: bigint, @Body() dto: ResetPasswordDto): Promise<void> {
+  resetPassword(@Param('userId', BigIntIdPipe) userId: bigint, @Body() dto: ResetPasswordDto): Promise<void> {
     return this.userService.resetPassword(userId, dto.newPassword);
   }
 }

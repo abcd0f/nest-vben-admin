@@ -11,15 +11,15 @@ const MAX_BIGINT_ID = 9223372036854775807n;
  * 这里统一走 `bigint`，并显式卡住 BIGINT 上限。
  */
 @Injectable()
-export class UserIdPipe implements PipeTransform<string, bigint> {
+export class BigIntIdPipe implements PipeTransform<string, bigint> {
   transform(value: string): bigint {
     if (!/^[1-9]\d*$/.test(value)) {
-      throw BusinessException.badRequest('用户 ID 必须是正整数十进制字符串');
+      throw BusinessException.badRequest('ID 必须是正整数十进制字符串');
     }
 
     const id = BigInt(value);
     if (id > MAX_BIGINT_ID) {
-      throw BusinessException.badRequest('用户 ID 超出 BIGINT 范围');
+      throw BusinessException.badRequest('ID 超出 BIGINT 范围');
     }
 
     return id;

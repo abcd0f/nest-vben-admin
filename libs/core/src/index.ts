@@ -7,7 +7,7 @@
  * - `exceptions/`  业务异常（`BusinessException`，携带业务码 / details / cause）
  * - `filters/`     全局异常过滤器（`AllExceptionsFilter`）
  * - `interceptors/`统一响应包装拦截器（`ResponseInterceptor`）
- * - `pipes/`       全局参数校验管道（`AppValidationPipe`）
+ * - `pipes/`       参数管道（`AppValidationPipe` 全局校验、`BigIntIdPipe` 十进制 ID → bigint）
  * - `decorators/`  `@RawResponse()`（跳过统一响应包装）、`@DateFormat()`（日期格式化）
  *
  * 接入方式（app.module.ts）：
