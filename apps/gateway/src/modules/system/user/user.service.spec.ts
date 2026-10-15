@@ -23,7 +23,8 @@ describe('userService password and ID contract', () => {
     const auth = new AuthService(prisma, new JwtService({ secret: 'test-secret' }), {
       secret: 'test-secret',
       tokenTtlSeconds: 60,
-    });
+      refreshToken: { enabled: false, ttlSeconds: 60 },
+    }, {} as never);
     const service = new UserService(prisma, auth);
 
     const response = await service.create({ username: 'test-user', password: 'P@ssw0rd' });
@@ -41,7 +42,8 @@ describe('userService password and ID contract', () => {
     const auth = new AuthService(prisma, new JwtService({ secret: 'test-secret' }), {
       secret: 'test-secret',
       tokenTtlSeconds: 60,
-    });
+      refreshToken: { enabled: false, ttlSeconds: 60 },
+    }, {} as never);
     const service = new UserService(prisma, auth);
 
     await service.update(id, { nickName: 'New name', password: 'injected' } as never);

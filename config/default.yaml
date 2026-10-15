@@ -19,6 +19,10 @@ app:
 auth:
   secret: development-only-change-me
   token-ttl-seconds: 28800
+  refresh-token:
+    # 启用后登录会返回 refreshToken，POST /auth/refresh 轮换令牌；同时必须启用 redis.enabled。
+    enabled: false
+    ttl-seconds: 604800
 
 database:
   # 占位连接串。真实值必须由 config/<env>.local.yaml 覆盖 —— 没有它会连不上，

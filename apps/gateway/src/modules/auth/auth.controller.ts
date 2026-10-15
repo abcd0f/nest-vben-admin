@@ -1,7 +1,7 @@
 import { AuthOnly, AuthService, CurrentUser, Public } from '@app/auth';
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { UserService } from '../system/user/user.service.js';
-import { ChangePasswordDto, LoginDto } from './auth.dto.js';
+import { ChangePasswordDto, LoginDto, RefreshTokenDto } from './auth.dto.js';
 
 @Controller('auth')
 export class AuthController {
@@ -14,6 +14,12 @@ export class AuthController {
   @Post('login')
   login(@Body() dto: LoginDto) {
     return this.auth.login(dto.username, dto.password);
+  }
+
+  @Public()
+  @Post('refresh')
+  refresh(@Body() dto: RefreshTokenDto) {
+    return this.auth.refresh(dto.refreshToken);
   }
 
   @AuthOnly()

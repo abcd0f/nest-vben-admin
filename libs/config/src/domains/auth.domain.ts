@@ -1,8 +1,12 @@
-import { asInteger, asObject, asString, defineConfigDomain } from '../core/index.js';
+import { asBoolean, asInteger, asObject, asString, defineConfigDomain } from '../core/index.js';
 
 export interface AuthConfig {
   secret: string;
   tokenTtlSeconds: number;
+  refreshToken: {
+    enabled: boolean;
+    ttlSeconds: number;
+  };
 }
 
 export const authDomain = defineConfigDomain<AuthConfig>({
@@ -13,7 +17,15 @@ export const authDomain = defineConfigDomain<AuthConfig>({
     if (context.environment === 'production' && secret === 'development-only-change-me') {
       throw new Error('生产环境必须配置 auth.secret');
     }
-    return { secret, tokenTtlSeconds: asInteger(value['token-ttl-seconds'], 'auth.token-ttl-seconds', 28_800, 60) };
+    const refresh = asObject(value['refresh-token'], 'auth.refresh-token');
+    return {
+      secret,
+      tokenTtlSeconds: asInteger(value['token-ttl-seconds'], 'auth.token-ttl-seconds', 28_800, 60),
+      refreshToken: {
+        enabled: asBoolean(refresh.enabled, 'auth.refresh-token.enabled', false),
+        ttlSeconds: asInteger(refresh['ttl-seconds'], 'auth.refresh-token.ttl-seconds', 604_800, 60),
+      },
+    };
   },
 });
 
