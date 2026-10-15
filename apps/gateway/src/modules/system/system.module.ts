@@ -1,11 +1,12 @@
 import { Global, Module } from '@nestjs/common';
 import { DeptModule } from './dept/dept.module.js';
+import { MenuModule } from './menu/menu.module.js';
 import { PostModule } from './post/post.module.js';
 import { RoleModule } from './role/role.module.js';
 import { UserModule } from './user/user.module.js';
 
 @Global()
 @Module({
-  imports: [UserModule, DeptModule, PostModule, RoleModule],
+  imports: [UserModule, DeptModule, PostModule, RoleModule, MenuModule],
 })
 export class SystemModule {}

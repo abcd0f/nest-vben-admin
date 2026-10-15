@@ -6,7 +6,7 @@
 
 本计划使用以下九张表：`sys_dept`、现有 `sys_user`、`sys_post`、`sys_user_post`、`sys_role`、`sys_user_role`、`sys_role_dept`、`sys_menu`、`sys_role_menu`。其中 `sys_role_dept` **只表示角色的自定义部门数据范围**；菜单和按钮/API 权限由 `sys_menu` + `sys_role_menu` 表达。岗位是组织资料，不自动赋予角色或权限。
 
-当前实施进度：A（约定与凭据）已完成；B（组织基础）正在实现。B 的迁移会将旧 `dept_id` 保留在 `legacy_dept_id`，新增 BIGINT 部门引用列；部署者需按 `docs/rbac-a-contract.md` 提供映射并运行 `script/backfill-user-depts.mjs`。旧 ID 不会被直接强转或清空。B 完成后继续按本计划进入 C。
+当前实施进度：A（约定与凭据）、B（组织基础）、C（角色关系）、D（权限资源）已完成。B 的迁移会将旧 `dept_id` 保留在 `legacy_dept_id`，新增 BIGINT 部门引用列；部署者需按 `docs/rbac-a-contract.md` 提供映射并运行 `script/backfill-user-depts.mjs`。旧 ID 不会被直接强转或清空。D 完成后继续按本计划进入 E。
 
 ### 完成定义
 

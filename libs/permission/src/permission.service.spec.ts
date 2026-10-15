@@ -1,18 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import type { PrismaService } from '@app/database';
 import { PermissionService } from './permission.service.js';
 
 describe('permissionService', () => {
-  let service: PermissionService;
-
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [PermissionService],
-    }).compile();
-
-    service = module.get<PermissionService>(PermissionService);
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  it('returns distinct permission codes from active granted actions', async () => {
+    const prisma = {
+      roleMenu: { findMany: vi.fn().mockResolvedValue([{ menu: { permissionCode: 'system:user:list' } }, { menu: { permissionCode: 'system:user:list' } }, { menu: { permissionCode: null } }]) },
+    } as unknown as PrismaService;
+    await expect(new PermissionService(prisma).getUserPermissionCodes(1n)).resolves.toEqual(['system:user:list']);
+    expect(prisma.roleMenu.findMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: expect.objectContaining({
+        role: { users: { some: { userId: 1n, user: { status: 1, deletedAt: null } } }, status: 1, deletedAt: null },
+        menu: { menuType: 'ACTION', status: 1, deletedAt: null, permissionCode: { not: null } },
+      }),
+    }));
   });
 });

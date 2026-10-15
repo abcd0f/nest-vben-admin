@@ -88,12 +88,34 @@ export class RoleService {
   async replaceRoleDepts(roleId: bigint, dto: ReplaceIdsDto) {
     const role = await this.prisma.role.findFirst({ where: { roleId, deletedAt: null } });
     if (role === null) throw BusinessException.notFound('角色不存在');
-    if (role.dataScope !== DataScope.CUSTOM) throw BusinessException.badRequest('只有 CUSTOM 数据范围的角色可以配置部门');
+    if (role.dataScope !== DataScope.CUSTOM)
+      throw BusinessException.badRequest('只有 CUSTOM 数据范围的角色可以配置部门');
     const deptIds = this.parseIds(dto.ids);
     await this.assertActiveDepts(deptIds);
     await this.prisma.$transaction(async (tx) => {
       await tx.roleDept.deleteMany({ where: { roleId } });
       if (deptIds.length > 0) await tx.roleDept.createMany({ data: deptIds.map((deptId) => ({ roleId, deptId })) });
+    });
+  }
+
+  async findRoleMenus(roleId: bigint) {
+    await this.assertRole(roleId);
+    const rows = await this.prisma.roleMenu.findMany({
+      where: { roleId },
+      select: { menuId: true },
+      orderBy: { menuId: 'asc' },
+    });
+    return rows.map((row) => row.menuId.toString());
+  }
+
+  async replaceRoleMenus(roleId: bigint, dto: ReplaceIdsDto) {
+    await this.assertRole(roleId);
+    const menuIds = this.parseIds(dto.ids);
+    const count = await this.prisma.menu.count({ where: { menuId: { in: menuIds }, status: 1, deletedAt: null } });
+    if (count !== menuIds.length) throw BusinessException.badRequest('菜单不存在、已停用或已删除');
+    await this.prisma.$transaction(async (tx) => {
+      await tx.roleMenu.deleteMany({ where: { roleId } });
+      if (menuIds.length > 0) await tx.roleMenu.createMany({ data: menuIds.map((menuId) => ({ roleId, menuId })) });
     });
   }
 
@@ -104,6 +126,11 @@ export class RoleService {
   private async assertUser(userId: bigint) {
     const user = await this.prisma.user.findFirst({ where: { userId, status: 1, deletedAt: null } });
     if (user === null) throw BusinessException.badRequest('用户不存在、已停用或已删除');
+  }
+
+  private async assertRole(roleId: bigint) {
+    const role = await this.prisma.role.findFirst({ where: { roleId, status: 1, deletedAt: null } });
+    if (role === null) throw BusinessException.badRequest('角色不存在、已停用或已删除');
   }
 
   private async assertActivePosts(ids: bigint[]) {

@@ -20,6 +20,7 @@ model Role {
 
   users UserRole[]
   depts RoleDept[]
+  menus RoleMenu[]
 
   @@index([deletedAt])
   @@map("sys_role")
@@ -56,4 +57,44 @@ model RoleDept {
   @@id([roleId, deptId])
   @@index([deptId])
   @@map("sys_role_dept")
+}
+
+enum MenuType {
+  DIRECTORY
+  MENU
+  ACTION
+}
+
+model Menu {
+  menuId         BigInt    @id @default(autoincrement()) @map("menu_id")
+  parentId       BigInt?   @map("parent_id")
+  menuType       MenuType  @map("menu_type")
+  menuName       String    @map("menu_name") @db.VarChar(64)
+  routePath      String?   @map("route_path") @db.VarChar(255)
+  component      String?   @db.VarChar(255)
+  permissionCode String?   @unique @map("permission_code") @db.VarChar(128)
+  sortOrder      Int       @default(0) @map("sort_order") @db.SmallInt
+  status         Int       @default(1) @db.SmallInt
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt      DateTime? @map("deleted_at") @db.Timestamptz(3)
+
+  parent   Menu?      @relation("MenuTree", fields: [parentId], references: [menuId], onDelete: Restrict, onUpdate: Cascade)
+  children Menu[]     @relation("MenuTree")
+  roles    RoleMenu[]
+
+  @@index([parentId])
+  @@index([deletedAt])
+  @@map("sys_menu")
+}
+
+model RoleMenu {
+  roleId BigInt @map("role_id")
+  menuId BigInt @map("menu_id")
+  role   Role   @relation(fields: [roleId], references: [roleId], onDelete: Cascade, onUpdate: Cascade)
+  menu   Menu   @relation(fields: [menuId], references: [menuId], onDelete: Cascade, onUpdate: Cascade)
+
+  @@id([roleId, menuId])
+  @@index([menuId])
+  @@map("sys_role_menu")
 }

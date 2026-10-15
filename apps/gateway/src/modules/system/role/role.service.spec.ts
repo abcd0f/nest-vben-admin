@@ -60,4 +60,26 @@ describe('roleService', () => {
 
     await expect(new RoleService(prisma).replaceRoleDepts(1n, { ids: ['2'] })).rejects.toBeInstanceOf(BusinessException);
   });
+
+  it('replaces role menus only after validating every active menu', async () => {
+    const tx = { roleMenu: { deleteMany: vi.fn(), createMany: vi.fn() } };
+    const prisma = {
+      role: { findFirst: vi.fn().mockResolvedValue({ roleId: 1n, status: 1, deletedAt: null }) },
+      menu: { count: vi.fn().mockResolvedValue(2) },
+      $transaction: vi.fn((callback) => callback(tx)),
+    } as unknown as PrismaService;
+    await new RoleService(prisma).replaceRoleMenus(1n, { ids: ['2', '3'] });
+    expect(tx.roleMenu.deleteMany).toHaveBeenCalledWith({ where: { roleId: 1n } });
+    expect(tx.roleMenu.createMany).toHaveBeenCalledWith({ data: [{ roleId: 1n, menuId: 2n }, { roleId: 1n, menuId: 3n }] });
+  });
+
+  it('does not start a role menu replacement when a target is inactive', async () => {
+    const prisma = {
+      role: { findFirst: vi.fn().mockResolvedValue({ roleId: 1n, status: 1, deletedAt: null }) },
+      menu: { count: vi.fn().mockResolvedValue(1) },
+      $transaction: vi.fn(),
+    } as unknown as PrismaService;
+    await expect(new RoleService(prisma).replaceRoleMenus(1n, { ids: ['2', '3'] })).rejects.toBeInstanceOf(BusinessException);
+    expect(prisma.$transaction).not.toHaveBeenCalled();
+  });
 });

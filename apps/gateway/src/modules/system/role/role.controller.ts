@@ -29,4 +29,12 @@ export class RoleController {
   @Put(':roleId/depts') replaceRoleDepts(@Param('roleId', UserIdPipe) roleId: bigint, @Body() dto: ReplaceIdsDto) {
     return this.service.replaceRoleDepts(roleId, dto);
   }
+
+  @Get(':roleId/menus') findRoleMenus(@Param('roleId', UserIdPipe) roleId: bigint) {
+    return this.service.findRoleMenus(roleId);
+  }
+
+  @Put(':roleId/menus') replaceRoleMenus(@Param('roleId', UserIdPipe) roleId: bigint, @Body() dto: ReplaceIdsDto) {
+    return this.service.replaceRoleMenus(roleId, dto);
+  }
 }
