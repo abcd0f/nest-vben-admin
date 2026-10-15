@@ -1,5 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
 
+import { ReplaceIdsDto } from '../role/role.dto.js';
+import { RoleService } from '../role/role.service.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { QueryUserDto } from './dto/query-user.dto.js';
 import { UserPageDto, UserResponseDto } from './dto/response.dto.js';
@@ -23,7 +25,18 @@ import { UserService } from './user.service.js';
  */
 @Controller('system/user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly roleService: RoleService,
+  ) {}
+
+  @Put(':userId/posts') replacePosts(@Param('userId', UserIdPipe) userId: bigint, @Body() dto: ReplaceIdsDto) {
+    return this.roleService.replaceUserPosts(userId, dto);
+  }
+
+  @Put(':userId/roles') replaceRoles(@Param('userId', UserIdPipe) userId: bigint, @Body() dto: ReplaceIdsDto) {
+    return this.roleService.replaceUserRoles(userId, dto);
+  }
 
   /**
    * 新增用户

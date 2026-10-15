@@ -1,0 +1,27 @@
+import { DataScope } from '@app/database/generated/prisma/client.js';
+import { ArrayUnique, IsArray, IsEnum, IsInt, IsOptional, IsString, Length, Matches, Max, Min } from 'class-validator';
+
+export { DataScope };
+
+export class CreateRoleDto {
+  @IsString() @Length(1, 64) roleCode!: string;
+  @IsString() @Length(1, 64) roleName!: string;
+  @IsOptional() @IsEnum(DataScope) dataScope?: DataScope;
+  @IsOptional() @IsInt() @Min(0) @Max(1) status?: number;
+}
+
+export class UpdateRoleDto {
+  @IsOptional() @IsString() @Length(1, 64) roleName?: string;
+  @IsOptional() @IsEnum(DataScope) dataScope?: DataScope;
+  @IsOptional() @IsInt() @Min(0) @Max(1) status?: number;
+}
+
+class IdListDto {
+  @IsArray()
+  @ArrayUnique()
+  @IsString({ each: true })
+  @Matches(/^[1-9]\d*$/, { each: true })
+  ids!: string[];
+}
+
+export class ReplaceIdsDto extends IdListDto {}

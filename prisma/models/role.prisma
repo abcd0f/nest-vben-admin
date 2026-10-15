@@ -1,0 +1,59 @@
+enum DataScope {
+  ALL
+  DEPT_AND_CHILDREN
+  DEPT
+  CUSTOM
+  SELF
+}
+
+/// 系统角色
+model Role {
+  roleId    BigInt    @id @default(autoincrement()) @map("role_id")
+  roleCode  String    @unique @map("role_code") @db.VarChar(64)
+  roleName  String    @map("role_name") @db.VarChar(64)
+  dataScope DataScope @default(SELF) @map("data_scope")
+  status    Int       @default(1) @db.SmallInt
+  isSystem  Boolean   @default(false) @map("is_system")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(3)
+
+  users UserRole[]
+  depts RoleDept[]
+
+  @@index([deletedAt])
+  @@map("sys_role")
+}
+
+model UserPost {
+  userId BigInt @map("user_id")
+  postId BigInt @map("post_id")
+  user   User   @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: Cascade)
+  post   Post   @relation(fields: [postId], references: [postId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@id([userId, postId])
+  @@index([postId])
+  @@map("sys_user_post")
+}
+
+model UserRole {
+  userId BigInt @map("user_id")
+  roleId BigInt @map("role_id")
+  user   User   @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: Cascade)
+  role   Role   @relation(fields: [roleId], references: [roleId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@id([userId, roleId])
+  @@index([roleId])
+  @@map("sys_user_role")
+}
+
+model RoleDept {
+  roleId BigInt @map("role_id")
+  deptId BigInt @map("dept_id")
+  role   Role   @relation(fields: [roleId], references: [roleId], onDelete: Cascade, onUpdate: Cascade)
+  dept   Dept   @relation(fields: [deptId], references: [deptId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@id([roleId, deptId])
+  @@index([deptId])
+  @@map("sys_role_dept")
+}

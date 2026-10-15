@@ -47,6 +47,8 @@ model User {
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz(3)
 
   dept Dept? @relation(fields: [deptId], references: [deptId], onDelete: Restrict, onUpdate: Cascade)
+  posts UserPost[]
+  roles UserRole[]
 
   /// 为软删除时间建立索引
   @@index([deletedAt])

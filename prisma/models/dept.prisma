@@ -11,6 +11,7 @@ model Dept {
   parent    Dept?     @relation("DeptTree", fields: [parentId], references: [deptId], onDelete: Restrict, onUpdate: Cascade)
   children  Dept[]    @relation("DeptTree")
   users     User[]
+  roleDepts RoleDept[]
 
   @@index([parentId])
   @@index([deletedAt])
