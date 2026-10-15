@@ -1,0 +1,18 @@
+/// 系统部门模型
+model Dept {
+  deptId    BigInt    @id @default(autoincrement()) @map("dept_id")
+  parentId  BigInt?   @map("parent_id")
+  deptName  String    @map("dept_name") @db.VarChar(64)
+  sortOrder Int       @default(0) @map("sort_order") @db.SmallInt
+  status    Int       @default(1) @db.SmallInt
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(3)
+  parent    Dept?     @relation("DeptTree", fields: [parentId], references: [deptId], onDelete: Restrict, onUpdate: Cascade)
+  children  Dept[]    @relation("DeptTree")
+  users     User[]
+
+  @@index([parentId])
+  @@index([deletedAt])
+  @@map("sys_dept")
+}

@@ -47,6 +47,10 @@ export class UserResponseDto {
   @Expose()
   username!: string;
 
+  @Expose()
+  @Transform(({ value }) => (value === null || value === undefined ? null : value.toString()))
+  deptId!: null | string;
+
   /**
    * 邮箱
    * @example admin@example.com

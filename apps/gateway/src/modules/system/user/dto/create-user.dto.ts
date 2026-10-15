@@ -47,4 +47,9 @@ export class CreateUserDto {
   @IsString()
   @MaxLength(64, { message: '昵称长度不能超过 64 位' })
   nickName?: string;
+
+  @IsOptional()
+  @IsString()
+  @Matches(/^[1-9]\d*$/, { message: '部门 ID 必须是正整数十进制字符串' })
+  deptId?: string;
 }

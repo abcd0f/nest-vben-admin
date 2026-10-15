@@ -1,0 +1,14 @@
+/// 系统岗位模型
+model Post {
+  postId    BigInt    @id @default(autoincrement()) @map("post_id")
+  postCode  String    @unique @map("post_code") @db.VarChar(64)
+  postName  String    @map("post_name") @db.VarChar(64)
+  sortOrder Int       @default(0) @map("sort_order") @db.SmallInt
+  status    Int       @default(1) @db.SmallInt
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(3)
+
+  @@index([deletedAt])
+  @@map("sys_post")
+}

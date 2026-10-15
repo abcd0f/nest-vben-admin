@@ -1,6 +1,6 @@
 import { PageQueryDto, toOptionalNumber } from '@app/common';
 import { Transform, Type } from 'class-transformer';
-import { IsEnum, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsEnum, IsOptional, IsString, Matches, MaxLength } from 'class-validator';
 import { UserStatus } from './response.dto.js';
 
 /**
@@ -54,4 +54,9 @@ export class QueryUserDto extends PageQueryDto {
   @Transform(({ value }) => toOptionalNumber(value))
   @IsEnum(UserStatus, { message: '状态只能是 0（停用）或 1（正常）' })
   status?: UserStatus;
+
+  @IsOptional()
+  @IsString()
+  @Matches(/^[1-9]\d*$/, { message: '部门 ID 必须是正整数十进制字符串' })
+  deptId?: string;
 }

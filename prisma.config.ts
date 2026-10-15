@@ -1,10 +1,11 @@
 import { defineConfig } from 'prisma/config';
-import { loadConfigSource } from './libs/config/src/core/source/index.js';
+import { loadConfigSource } from './libs/config/src/core/config-loader.js';
 
 // Prisma CLI（migrate / db push / studio）不走 Nest 的 DI，这里直接读同一份
 // config/*.yaml，避免连接串出现第二处来源。
 const source = loadConfigSource();
-const url = source.read({ namespace: 'database', field: 'url', path: ['database', 'url'] });
+const database = source.values.database as { url?: unknown } | undefined;
+const url = database?.url;
 
 if (typeof url !== 'string' || url.length === 0) {
   throw new Error('database.url 未配置：请检查 config/default.yaml 与 config/<env>.local.yaml');

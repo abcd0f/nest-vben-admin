@@ -6,7 +6,7 @@
 
 本计划使用以下九张表：`sys_dept`、现有 `sys_user`、`sys_post`、`sys_user_post`、`sys_role`、`sys_user_role`、`sys_role_dept`、`sys_menu`、`sys_role_menu`。其中 `sys_role_dept` **只表示角色的自定义部门数据范围**；菜单和按钮/API 权限由 `sys_menu` + `sys_role_menu` 表达。岗位是组织资料，不自动赋予角色或权限。
 
-当前仓库仅有 `prisma/models/user.prisma` 中的 `sys_user` 及用户 CRUD；`libs/auth` 和 `libs/permission` 仍为空服务，未接入应用。现有用户接口没有认证、授权保护，密码按原样写库。`sys_user.dept_id` 目前是 `String? @unique`，与“多个用户属于同一个部门”冲突，必须迁移。本文是实施清单，尚未执行任何业务代码或数据库修改。
+当前实施进度：A（约定与凭据）已完成；B（组织基础）正在实现。B 的迁移会将旧 `dept_id` 保留在 `legacy_dept_id`，新增 BIGINT 部门引用列；部署者需按 `docs/rbac-a-contract.md` 提供映射并运行 `script/backfill-user-depts.mjs`。旧 ID 不会被直接强转或清空。B 完成后继续按本计划进入 C。
 
 ### 完成定义
 

@@ -85,6 +85,7 @@ export class UserService {
     }
 
     const passwordHash = await this.auth.hashPassword(dto.password);
+    const deptId = dto.deptId == null ? null : await this.resolveDept(dto.deptId);
 
     try {
       const user = await this.prisma.user.create({
@@ -93,6 +94,7 @@ export class UserService {
           password: passwordHash,
           email: dto.email ?? null,
           nickName: dto.nickName ?? null,
+          deptId,
         },
       });
 
@@ -173,6 +175,9 @@ export class UserService {
     if (isPresent(dto.status)) {
       data.status = dto.status;
     }
+    if (dto.deptId !== undefined) {
+      data.dept = dto.deptId === null ? { disconnect: true } : { connect: { deptId: await this.resolveDept(dto.deptId) } };
+    }
     try {
       const user = await this.prisma.user.update({ where: { userId }, data });
 
@@ -226,8 +231,17 @@ export class UserService {
     if (query.status !== undefined) {
       where.status = query.status;
     }
+    if (query.deptId != null) where.deptId = BigInt(query.deptId);
 
     return where;
+  }
+
+  private async resolveDept(value: string): Promise<bigint> {
+    const deptId = BigInt(value);
+    if (deptId > 9223372036854775807n) throw BusinessException.badRequest('部门 ID 超出 BIGINT 范围');
+    const dept = await this.prisma.dept.findFirst({ where: { deptId, status: 1, deletedAt: null } });
+    if (dept === null) throw BusinessException.badRequest('部门不存在、已停用或已删除');
+    return deptId;
   }
 
   /**

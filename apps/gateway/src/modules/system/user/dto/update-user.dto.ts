@@ -1,7 +1,7 @@
 import { toOptionalNumber } from '@app/common';
 import { OmitType, PartialType } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsEnum, IsOptional } from 'class-validator';
+import { IsEnum, IsOptional, IsString, Matches } from 'class-validator';
 import { CreateUserDto } from './create-user.dto.js';
 import { UserStatus } from './response.dto.js';
 
@@ -20,7 +20,7 @@ import { UserStatus } from './response.dto.js';
  * 所以必须在这里显式补上——否则「编辑用户时改状态」要么编译不过，
  * 要么被静默丢弃。
  */
-export class UpdateUserDto extends PartialType(OmitType(CreateUserDto, ['password'] as const)) {
+export class UpdateUserDto extends PartialType(OmitType(CreateUserDto, ['password', 'deptId'] as const)) {
   /**
    * 状态：1 正常，0 停用。null / 空串视为未传
    * @example 1
@@ -30,4 +30,9 @@ export class UpdateUserDto extends PartialType(OmitType(CreateUserDto, ['passwor
   @Transform(({ value }) => toOptionalNumber(value))
   @IsEnum(UserStatus, { message: '状态只能是 0（停用）或 1（正常）' })
   status?: UserStatus;
+
+  @IsOptional()
+  @IsString()
+  @Matches(/^[1-9]\d*$/, { message: '部门 ID 必须是正整数十进制字符串' })
+  deptId?: null | string;
 }
