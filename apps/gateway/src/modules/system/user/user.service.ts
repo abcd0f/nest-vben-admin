@@ -1,7 +1,7 @@
 import { AuthService } from '@app/auth';
 import { toDto, toPageDto } from '@app/common';
 import { BusinessException } from '@app/core';
-import { paginate, Prisma, PrismaService } from '@app/database';
+import { nextSnowflakeId, paginate, Prisma, PrismaService } from '@app/database';
 import { PermissionService } from '@app/permission';
 import { Injectable, Optional } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto.js';
@@ -93,6 +93,7 @@ export class UserService {
     try {
       const user = await this.prisma.user.create({
         data: {
+          userId: nextSnowflakeId(),
           username: dto.username,
           password: passwordHash,
           email: dto.email ?? null,

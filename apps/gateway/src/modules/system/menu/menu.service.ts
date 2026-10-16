@@ -1,6 +1,6 @@
 import { toDto } from '@app/common';
 import { BusinessException } from '@app/core';
-import { Prisma, PrismaService } from '@app/database';
+import { nextSnowflakeId, Prisma, PrismaService } from '@app/database';
 import { Injectable } from '@nestjs/common';
 import { MenuDto, MenuType, UpdateMenuDto } from './dto/menu.dto.js';
 import { MenuResponseDto } from './dto/response.dto.js';
@@ -27,6 +27,7 @@ export class MenuService {
     const data = await this.prepareData(dto);
     const row = await this.prisma.menu.create({
       data: {
+        menuId: nextSnowflakeId(),
         ...data,
         parentId: data.parentId ?? null,
         menuType: dto.menuType,

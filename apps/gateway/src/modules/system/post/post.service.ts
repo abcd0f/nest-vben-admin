@@ -1,6 +1,6 @@
 import { toDto } from '@app/common';
 import { BusinessException } from '@app/core';
-import { PrismaService } from '@app/database';
+import { nextSnowflakeId, PrismaService } from '@app/database';
 import { Injectable } from '@nestjs/common';
 import { PostDto } from './dto/post.dto.js';
 import { PostResponseDto } from './dto/response.dto.js';
@@ -25,7 +25,7 @@ export class PostService {
 
   async create(dto: PostDto) {
     const x = await this.prisma.post.create({
-      data: { ...dto, sortOrder: dto.sortOrder ?? 0, status: dto.status ?? 1 },
+      data: { postId: nextSnowflakeId(), ...dto, sortOrder: dto.sortOrder ?? 0, status: dto.status ?? 1 },
     });
     return toDto(PostResponseDto, x)!;
   }

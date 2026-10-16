@@ -11,3 +11,4 @@ export type { User } from './generated/prisma/client.js';
 export type * from './generated/prisma/models.js';
 export * from './helpers/pagination.js';
 export * from './prisma.service.js';
+export * from './snowflake-id.js';

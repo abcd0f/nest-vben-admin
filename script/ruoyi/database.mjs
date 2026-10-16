@@ -50,13 +50,20 @@ export async function withSandbox(config, work) {
   }
 }
 
-export async function replaySchemas(client, backendRoot, targetDdl) {
-  const migrations = [];
-  for (const entry of (await readdir(join(backendRoot, 'prisma/migrations'), { withFileTypes: true }))
-    .filter((entry) => entry.isDirectory())
-    .sort((a, b) => a.name.localeCompare(b.name))) {
-    migrations.push(await readFile(join(backendRoot, 'prisma/migrations', entry.name, 'migration.sql'), 'utf8'));
-  }
+export async function replaySchemas(
+  client,
+  backendRoot,
+  targetDdl,
+  { frozen = true, baseline = join(backendRoot, 'docs/ruoyi/phase0') } = {},
+) {
+  const paths = frozen
+    ? JSON.parse(await readFile(join(baseline, 'manifest.json'), 'utf8'))
+        .currentFiles.filter((entry) => entry.path.endsWith('/migration.sql')).map((entry) => entry.path)
+    : (await readdir(join(backendRoot, 'prisma/migrations'), { withFileTypes: true }))
+        .filter((entry) => entry.isDirectory())
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((entry) => `prisma/migrations/${entry.name}/migration.sql`);
+  const migrations = await Promise.all(paths.map((path) => readFile(join(backendRoot, path), 'utf8')));
   for (const [schema, sql] of [
     ['stage0_current', migrations.join('\n')],
     ['stage0_target', targetDdl],

@@ -28,7 +28,7 @@ const save = async (directory, name, value) => writeFile(join(directory, name), 
 async function freeze() {
   const collected = await collectBaseline(values.source, backendRoot);
   const config = databaseConfig(process.env.RUOYI_DATABASE_URL);
-  const schemas = await withSandbox(config, (client) => replaySchemas(client, backendRoot, collected.ddl));
+  const schemas = await withSandbox(config, (client) => replaySchemas(client, backendRoot, collected.ddl, { frozen: false }));
   // Refuse to replace a frozen baseline. A new approved version needs a new directory.
   await mkdir(values.baseline, { recursive: true });
   const artifacts = {
@@ -116,6 +116,7 @@ async function inspect(rehearse) {
           sandbox,
           backendRoot,
           await readFile(join(values.baseline, 'target.sql'), 'utf8'),
+          { baseline: values.baseline },
         );
         if (diffSchemas(replayed.target, target).length)
           throw new Error('Target DDL replay differs from frozen baseline');
