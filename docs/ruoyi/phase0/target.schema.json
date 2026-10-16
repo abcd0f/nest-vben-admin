@@ -1,0 +1,1019 @@
+{
+  "sys_dept": {
+    "columns": [
+      {
+        "name": "dept_id",
+        "position": 1,
+        "type": "bigint",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "tenant_id",
+        "position": 2,
+        "type": "character varying(20)",
+        "nullable": true,
+        "default": "'000000'::character varying",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "parent_id",
+        "position": 3,
+        "type": "bigint",
+        "nullable": true,
+        "default": "0",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "ancestors",
+        "position": 4,
+        "type": "character varying(500)",
+        "nullable": true,
+        "default": "''::character varying",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "dept_name",
+        "position": 5,
+        "type": "character varying(30)",
+        "nullable": true,
+        "default": "''::character varying",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "dept_category",
+        "position": 6,
+        "type": "character varying(100)",
+        "nullable": true,
+        "default": "NULL::character varying",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "order_num",
+        "position": 7,
+        "type": "integer",
+        "nullable": true,
+        "default": "0",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "leader",
+        "position": 8,
+        "type": "bigint",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "phone",
+        "position": 9,
+        "type": "character varying(11)",
+        "nullable": true,
+        "default": "NULL::character varying",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "email",
+        "position": 10,
+        "type": "character varying(50)",
+        "nullable": true,
+        "default": "NULL::character varying",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "status",
+        "position": 11,
+        "type": "character(1)",
+        "nullable": true,
+        "default": "'0'::bpchar",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "del_flag",
+        "position": 12,
+        "type": "character(1)",
+        "nullable": true,
+        "default": "'0'::bpchar",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "create_dept",
+        "position": 13,
+        "type": "bigint",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "create_by",
+        "position": 14,
+        "type": "bigint",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "create_time",
+        "position": 15,
+        "type": "timestamp without time zone",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "update_by",
+        "position": 16,
+        "type": "bigint",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "update_time",
+        "position": 17,
+        "type": "timestamp without time zone",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      }
+    ],
+    "constraints": [
+      {
+        "name": "sys_dept_pk",
+        "type": "p",
+        "definition": "PRIMARY KEY (dept_id)"
+      }
+    ],
+    "indexes": [
+      {
+        "name": "sys_dept_pk",
+        "definition": "CREATE UNIQUE INDEX sys_dept_pk ON sys_dept USING btree (dept_id)"
+      }
+    ]
+  },
+  "sys_menu": {
+    "columns": [
+      {
+        "name": "menu_id",
+        "position": 1,
+        "type": "bigint",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "menu_name",
+        "position": 2,
+        "type": "character varying(50)",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "parent_id",
+        "position": 3,
+        "type": "bigint",
+        "nullable": true,
+        "default": "0",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "order_num",
+        "position": 4,
+        "type": "integer",
+        "nullable": true,
+        "default": "0",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "path",
+        "position": 5,
+        "type": "character varying(200)",
+        "nullable": true,
+        "default": "''::character varying",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "component",
+        "position": 6,
+        "type": "character varying(255)",
+        "nullable": true,
+        "default": "NULL::character varying",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "query_param",
+        "position": 7,
+        "type": "character varying(255)",
+        "nullable": true,
+        "default": "NULL::character varying",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "is_frame",
+        "position": 8,
+        "type": "character(1)",
+        "nullable": true,
+        "default": "'1'::bpchar",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "is_cache",
+        "position": 9,
+        "type": "character(1)",
+        "nullable": true,
+        "default": "'0'::bpchar",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "menu_type",
+        "position": 10,
+        "type": "character(1)",
+        "nullable": true,
+        "default": "''::bpchar",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "visible",
+        "position": 11,
+        "type": "character(1)",
+        "nullable": true,
+        "default": "'0'::bpchar",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "status",
+        "position": 12,
+        "type": "character(1)",
+        "nullable": true,
+        "default": "'0'::bpchar",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "perms",
+        "position": 13,
+        "type": "character varying(100)",
+        "nullable": true,
+        "default": "NULL::character varying",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "icon",
+        "position": 14,
+        "type": "character varying(100)",
+        "nullable": true,
+        "default": "'#'::character varying",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "create_dept",
+        "position": 15,
+        "type": "bigint",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "create_by",
+        "position": 16,
+        "type": "bigint",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "create_time",
+        "position": 17,
+        "type": "timestamp without time zone",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "update_by",
+        "position": 18,
+        "type": "bigint",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "update_time",
+        "position": 19,
+        "type": "timestamp without time zone",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "remark",
+        "position": 20,
+        "type": "character varying(500)",
+        "nullable": true,
+        "default": "''::character varying",
+        "identity": "",
+        "generated": ""
+      }
+    ],
+    "constraints": [
+      {
+        "name": "sys_menu_pk",
+        "type": "p",
+        "definition": "PRIMARY KEY (menu_id)"
+      }
+    ],
+    "indexes": [
+      {
+        "name": "sys_menu_pk",
+        "definition": "CREATE UNIQUE INDEX sys_menu_pk ON sys_menu USING btree (menu_id)"
+      }
+    ]
+  },
+  "sys_post": {
+    "columns": [
+      {
+        "name": "post_id",
+        "position": 1,
+        "type": "bigint",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "tenant_id",
+        "position": 2,
+        "type": "character varying(20)",
+        "nullable": true,
+        "default": "'000000'::character varying",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "dept_id",
+        "position": 3,
+        "type": "bigint",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "post_code",
+        "position": 4,
+        "type": "character varying(64)",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "post_category",
+        "position": 5,
+        "type": "character varying(100)",
+        "nullable": true,
+        "default": "NULL::character varying",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "post_name",
+        "position": 6,
+        "type": "character varying(50)",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "post_sort",
+        "position": 7,
+        "type": "integer",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "status",
+        "position": 8,
+        "type": "character(1)",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "create_dept",
+        "position": 9,
+        "type": "bigint",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "create_by",
+        "position": 10,
+        "type": "bigint",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "create_time",
+        "position": 11,
+        "type": "timestamp without time zone",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "update_by",
+        "position": 12,
+        "type": "bigint",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "update_time",
+        "position": 13,
+        "type": "timestamp without time zone",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "remark",
+        "position": 14,
+        "type": "character varying(500)",
+        "nullable": true,
+        "default": "NULL::character varying",
+        "identity": "",
+        "generated": ""
+      }
+    ],
+    "constraints": [
+      {
+        "name": "sys_post_pk",
+        "type": "p",
+        "definition": "PRIMARY KEY (post_id)"
+      }
+    ],
+    "indexes": [
+      {
+        "name": "sys_post_pk",
+        "definition": "CREATE UNIQUE INDEX sys_post_pk ON sys_post USING btree (post_id)"
+      }
+    ]
+  },
+  "sys_role": {
+    "columns": [
+      {
+        "name": "role_id",
+        "position": 1,
+        "type": "bigint",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "tenant_id",
+        "position": 2,
+        "type": "character varying(20)",
+        "nullable": true,
+        "default": "'000000'::character varying",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "role_name",
+        "position": 3,
+        "type": "character varying(30)",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "role_key",
+        "position": 4,
+        "type": "character varying(100)",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "role_sort",
+        "position": 5,
+        "type": "integer",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "data_scope",
+        "position": 6,
+        "type": "character(1)",
+        "nullable": true,
+        "default": "'1'::bpchar",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "menu_check_strictly",
+        "position": 7,
+        "type": "boolean",
+        "nullable": true,
+        "default": "true",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "dept_check_strictly",
+        "position": 8,
+        "type": "boolean",
+        "nullable": true,
+        "default": "true",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "status",
+        "position": 9,
+        "type": "character(1)",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "del_flag",
+        "position": 10,
+        "type": "character(1)",
+        "nullable": true,
+        "default": "'0'::bpchar",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "create_dept",
+        "position": 11,
+        "type": "bigint",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "create_by",
+        "position": 12,
+        "type": "bigint",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "create_time",
+        "position": 13,
+        "type": "timestamp without time zone",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "update_by",
+        "position": 14,
+        "type": "bigint",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "update_time",
+        "position": 15,
+        "type": "timestamp without time zone",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "remark",
+        "position": 16,
+        "type": "character varying(500)",
+        "nullable": true,
+        "default": "NULL::character varying",
+        "identity": "",
+        "generated": ""
+      }
+    ],
+    "constraints": [
+      {
+        "name": "sys_role_pk",
+        "type": "p",
+        "definition": "PRIMARY KEY (role_id)"
+      }
+    ],
+    "indexes": [
+      {
+        "name": "sys_role_pk",
+        "definition": "CREATE UNIQUE INDEX sys_role_pk ON sys_role USING btree (role_id)"
+      }
+    ]
+  },
+  "sys_role_dept": {
+    "columns": [
+      {
+        "name": "role_id",
+        "position": 1,
+        "type": "bigint",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "dept_id",
+        "position": 2,
+        "type": "bigint",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      }
+    ],
+    "constraints": [
+      {
+        "name": "sys_role_dept_pk",
+        "type": "p",
+        "definition": "PRIMARY KEY (role_id, dept_id)"
+      }
+    ],
+    "indexes": [
+      {
+        "name": "sys_role_dept_pk",
+        "definition": "CREATE UNIQUE INDEX sys_role_dept_pk ON sys_role_dept USING btree (role_id, dept_id)"
+      }
+    ]
+  },
+  "sys_role_menu": {
+    "columns": [
+      {
+        "name": "role_id",
+        "position": 1,
+        "type": "bigint",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "menu_id",
+        "position": 2,
+        "type": "bigint",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      }
+    ],
+    "constraints": [
+      {
+        "name": "sys_role_menu_pk",
+        "type": "p",
+        "definition": "PRIMARY KEY (role_id, menu_id)"
+      }
+    ],
+    "indexes": [
+      {
+        "name": "sys_role_menu_pk",
+        "definition": "CREATE UNIQUE INDEX sys_role_menu_pk ON sys_role_menu USING btree (role_id, menu_id)"
+      }
+    ]
+  },
+  "sys_user": {
+    "columns": [
+      {
+        "name": "user_id",
+        "position": 1,
+        "type": "bigint",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "tenant_id",
+        "position": 2,
+        "type": "character varying(20)",
+        "nullable": true,
+        "default": "'000000'::character varying",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "dept_id",
+        "position": 3,
+        "type": "bigint",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "user_name",
+        "position": 4,
+        "type": "character varying(30)",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "nick_name",
+        "position": 5,
+        "type": "character varying(30)",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "user_type",
+        "position": 6,
+        "type": "character varying(10)",
+        "nullable": true,
+        "default": "'sys_user'::character varying",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "email",
+        "position": 7,
+        "type": "character varying(50)",
+        "nullable": true,
+        "default": "''::character varying",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "phonenumber",
+        "position": 8,
+        "type": "character varying(11)",
+        "nullable": true,
+        "default": "''::character varying",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "sex",
+        "position": 9,
+        "type": "character(1)",
+        "nullable": true,
+        "default": "'0'::bpchar",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "avatar",
+        "position": 10,
+        "type": "bigint",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "password",
+        "position": 11,
+        "type": "character varying(100)",
+        "nullable": true,
+        "default": "''::character varying",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "status",
+        "position": 12,
+        "type": "character(1)",
+        "nullable": true,
+        "default": "'0'::bpchar",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "del_flag",
+        "position": 13,
+        "type": "character(1)",
+        "nullable": true,
+        "default": "'0'::bpchar",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "login_ip",
+        "position": 14,
+        "type": "character varying(128)",
+        "nullable": true,
+        "default": "''::character varying",
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "login_date",
+        "position": 15,
+        "type": "timestamp without time zone",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "create_dept",
+        "position": 16,
+        "type": "bigint",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "create_by",
+        "position": 17,
+        "type": "bigint",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "create_time",
+        "position": 18,
+        "type": "timestamp without time zone",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "update_by",
+        "position": 19,
+        "type": "bigint",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "update_time",
+        "position": 20,
+        "type": "timestamp without time zone",
+        "nullable": true,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "remark",
+        "position": 21,
+        "type": "character varying(500)",
+        "nullable": true,
+        "default": "NULL::character varying",
+        "identity": "",
+        "generated": ""
+      }
+    ],
+    "constraints": [
+      {
+        "name": "sys_user_pk",
+        "type": "p",
+        "definition": "PRIMARY KEY (user_id)"
+      }
+    ],
+    "indexes": [
+      {
+        "name": "sys_user_pk",
+        "definition": "CREATE UNIQUE INDEX sys_user_pk ON sys_user USING btree (user_id)"
+      }
+    ]
+  },
+  "sys_user_post": {
+    "columns": [
+      {
+        "name": "user_id",
+        "position": 1,
+        "type": "bigint",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "post_id",
+        "position": 2,
+        "type": "bigint",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      }
+    ],
+    "constraints": [
+      {
+        "name": "sys_user_post_pk",
+        "type": "p",
+        "definition": "PRIMARY KEY (user_id, post_id)"
+      }
+    ],
+    "indexes": [
+      {
+        "name": "sys_user_post_pk",
+        "definition": "CREATE UNIQUE INDEX sys_user_post_pk ON sys_user_post USING btree (user_id, post_id)"
+      }
+    ]
+  },
+  "sys_user_role": {
+    "columns": [
+      {
+        "name": "user_id",
+        "position": 1,
+        "type": "bigint",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      },
+      {
+        "name": "role_id",
+        "position": 2,
+        "type": "bigint",
+        "nullable": false,
+        "default": null,
+        "identity": "",
+        "generated": ""
+      }
+    ],
+    "constraints": [
+      {
+        "name": "sys_user_role_pk",
+        "type": "p",
+        "definition": "PRIMARY KEY (user_id, role_id)"
+      }
+    ],
+    "indexes": [
+      {
+        "name": "sys_user_role_pk",
+        "definition": "CREATE UNIQUE INDEX sys_user_role_pk ON sys_user_role USING btree (user_id, role_id)"
+      }
+    ]
+  }
+}

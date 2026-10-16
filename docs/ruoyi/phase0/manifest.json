@@ -1,0 +1,361 @@
+{
+  "formatVersion": 1,
+  "project": "RuoYi-Vue-Plus",
+  "version": "5.6.2",
+  "dialect": "PostgreSQL",
+  "sourceFiles": [
+    {
+      "path": "pom.xml",
+      "sha256": "00a6c7f98b8d9931df37d806c4d907dfd72dc89b6bb48de12acfadc11dfebd25"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/org/dromara/web/service/SysLoginService.java",
+      "sha256": "95bb2ffdf9a393e2f35f86e04dc11ac53fee32ee26696535a1949d9280b1c42a"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/org/dromara/web/service/impl/PasswordAuthStrategy.java",
+      "sha256": "c5a7452be1b7d701e32b7805e400f78564240896aadf4e1208a4f12b06d1251f"
+    },
+    {
+      "path": "ruoyi-admin/src/main/resources/application.yml",
+      "sha256": "a483677ecafbd050c9e957d209435a2444a7d8c2fc6c64ceb1781ac11df53fa6"
+    },
+    {
+      "path": "ruoyi-common/ruoyi-common-core/src/main/java/org/dromara/common/core/constant/SystemConstants.java",
+      "sha256": "311295b2b1598da522f7d35bdb4f480a50e259c37e8548959f0a29ff96471e9f"
+    },
+    {
+      "path": "ruoyi-common/ruoyi-common-core/src/main/java/org/dromara/common/core/constant/TenantConstants.java",
+      "sha256": "cdc2714f2d53fb4342ae9e1d71514cebcfcd188614c6ec286b59086c28a3010e"
+    },
+    {
+      "path": "ruoyi-common/ruoyi-common-core/src/main/java/org/dromara/common/core/domain/R.java",
+      "sha256": "e09ffa4b821f712de0eb08d04dc4c5f1aabbc403daca502e7db8db9802b91f5e"
+    },
+    {
+      "path": "ruoyi-common/ruoyi-common-core/src/main/java/org/dromara/common/core/domain/model/LoginUser.java",
+      "sha256": "c3483d4253ec60d9cf3953780cc6c10008206566f3650ec8bf592891bf199d85"
+    },
+    {
+      "path": "ruoyi-common/ruoyi-common-mybatis/src/main/java/org/dromara/common/mybatis/core/domain/BaseEntity.java",
+      "sha256": "3edc7b26e14f841525ab86f343232a54e985ab88d1cbdb83f3f681ed66982f7f"
+    },
+    {
+      "path": "ruoyi-common/ruoyi-common-mybatis/src/main/java/org/dromara/common/mybatis/core/page/PageQuery.java",
+      "sha256": "a69414530af3980daea3e9687ccbb332fa3755702933a25400311d313692b2f1"
+    },
+    {
+      "path": "ruoyi-common/ruoyi-common-mybatis/src/main/java/org/dromara/common/mybatis/core/page/TableDataInfo.java",
+      "sha256": "477ea4a4f3666ec36f40e4e3ada68e6ad3aa479f36d1ba91d1d3e9d250e5e6dc"
+    },
+    {
+      "path": "ruoyi-common/ruoyi-common-mybatis/src/main/java/org/dromara/common/mybatis/enums/DataScopeType.java",
+      "sha256": "46538ef9a8baf2ee1a9dd37aff2eef4b31e3e44887d6fc96203344aedde30abc"
+    },
+    {
+      "path": "ruoyi-common/ruoyi-common-mybatis/src/main/java/org/dromara/common/mybatis/handler/PlusDataPermissionHandler.java",
+      "sha256": "466b1dcc2a534a0abff60fc21e69f10dab6d162ae3d2c9887c3ec448917b69f9"
+    },
+    {
+      "path": "ruoyi-common/ruoyi-common-satoken/src/main/java/org/dromara/common/satoken/utils/LoginHelper.java",
+      "sha256": "de01f77c3e3c4d45c0363a20136bd8bf460b5197c28152f6da2594066bff2092"
+    },
+    {
+      "path": "ruoyi-common/ruoyi-common-security/src/main/java/org/dromara/common/security/config/SecurityConfig.java",
+      "sha256": "936bef154b18523402426156786b1c3e70a5411b75d0f0beef26e4fdd2f7f29f"
+    },
+    {
+      "path": "ruoyi-common/ruoyi-common-tenant/src/main/java/org/dromara/common/tenant/handle/PlusTenantLineHandler.java",
+      "sha256": "6c766fea4d5dc636158d2aeed66bb117888a1c2a4b344f7447e38a7c87d954cd"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/controller/system/SysDeptController.java",
+      "sha256": "881b64e720183e701b0e473c5b09f9b975ae295a875466f3cad6805366497b5d"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/controller/system/SysMenuController.java",
+      "sha256": "ff3bcffa8b4c606300e56783e1cf82bb3bc964d4787aea919d931185a0dec664"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/controller/system/SysPostController.java",
+      "sha256": "ccf255b4467f293792895831d87c791283734a6a01b4c23ca9c139fef5734edc"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/controller/system/SysRoleController.java",
+      "sha256": "9b63ace3959cbec97110a4e46cda51fdbbc8fdf8909e48685921b8d56d496d77"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/controller/system/SysUserController.java",
+      "sha256": "ad0eb926b0e47d905523c1d0bb255e97988bda21b9901a651b00ae91cb75095e"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/SysDept.java",
+      "sha256": "390a45cac1723abaffe2ec5d0c0026a5b78ef5d3ea7fda04daf5b63c5edbdfdb"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/SysMenu.java",
+      "sha256": "4ea0f06675155d205e4974ed465b1f0f243b27e363256d535bb49f20b7045afa"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/SysPost.java",
+      "sha256": "9c0f1f46eb8e7301d60dcc8d7e30a63877382959b7a6f5dedaf3dc1cc6c87124"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/SysRole.java",
+      "sha256": "0d888e8b78c5fc9f3edd337740c0e9f03bb0fb37513175bb28c6e584147447a3"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/SysRoleDept.java",
+      "sha256": "7e07212be2962d760605ca2da5533849e6e3f8718b642fcd76236e770e05a969"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/SysRoleMenu.java",
+      "sha256": "d807b112401aa98791286b01be003c428bc55175b7229414c9490127d9cba51d"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/SysUser.java",
+      "sha256": "0ccb11a5f2c4d25cafdb4362c0a1a456147a6f8bc40b2e49cbe8d9fb72754da4"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/SysUserPost.java",
+      "sha256": "e15464b9f26819f945e6571aebb8a28b32f86f85b0ff57f208583802720abfd8"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/SysUserRole.java",
+      "sha256": "619525da81e96963d43cfb42cbf6dd7abb21a2edfa91daba83e0d754ded66865"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/bo/SysDeptBo.java",
+      "sha256": "afca49e68c7e228828c6f26dcabe2351e3b986fc83ae3288abfbf34996f4da38"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/bo/SysMenuBo.java",
+      "sha256": "e2cbc467a9ad5ae17293741e9bfa9fead80ec31f0aa9a4ee741931aab66e0dd7"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/bo/SysPostBo.java",
+      "sha256": "01cd741f46a542eb5a08a0eee114b385b72926850bb6a2dd965a0f18c0b4d02a"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/bo/SysRoleBo.java",
+      "sha256": "f10a39468937b013a6e2c5827459d39ac5b21ab47e89ae32f6ac823a9a245234"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/bo/SysUserBo.java",
+      "sha256": "21602402d187a7f1c8e22f7bc230473c4492eab215aae1f05e9cefdb379771db"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/bo/SysUserPasswordBo.java",
+      "sha256": "3b36d923345c2d63770d50b03ff08ce35c140ce9a0cf1d831233c543a53f87ba"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/bo/SysUserProfileBo.java",
+      "sha256": "826f6603b726ca56205cd1e4392375850391e61241838d8abb48751bae928602"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/vo/MetaVo.java",
+      "sha256": "d3ba85793bf3e23a19cab5a123a33fa72da8b7dabd13ca6e941f9a61393d6b9d"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/vo/RouterVo.java",
+      "sha256": "3cc18e04e6f2cc5d45c7c9e771cc24177a8d220d76c413097ad07ac2a6c4dcaa"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/vo/SysDeptVo.java",
+      "sha256": "8977be301f85da26f7ac3c46b0125f6837de366586f5782dac974d0530f7952a"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/vo/SysMenuVo.java",
+      "sha256": "9b0f02f27110bc74ade48f5b11fd9a021dd53b18fc3fdc2e39a2a4e4389e015f"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/vo/SysPostVo.java",
+      "sha256": "0a46769e75e98cf61f136478db3bbd892a1e87664b6297d03fcdd948ba9e96a6"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/vo/SysRoleVo.java",
+      "sha256": "7c6ac0d954be26f9b8d77e77e14b6cd7b010a40d597308e2720bef1d0ec6adf9"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/vo/SysUserExportVo.java",
+      "sha256": "d67e2e59b4ed5277f47efebacf058ace90ad0af34d3da56e4bcc6e7ae95b82bb"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/vo/SysUserImportVo.java",
+      "sha256": "49cf7f11949dccc197c4b5932033a1e0b9cf77626644bb3ed4624d88b4573ed5"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/vo/SysUserInfoVo.java",
+      "sha256": "92e0dedcd121ea2745e071ad283e9db5e8f2fbe668c6e5a9b1fbeec153323e78"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/vo/SysUserVo.java",
+      "sha256": "776ae34cb97fa6219532abbba62365b5c5e8c41573c9896fcfaf4019efdba1c3"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/domain/vo/UserInfoVo.java",
+      "sha256": "f7cafdfa74a97e841c5f2a0d8e976864d5fd714cb8138d707121d6aff185a991"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/listener/SysUserImportListener.java",
+      "sha256": "34ae391f6005baa165f559abc7f7a1e728c1840702c495fdf265750577b6f541"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/mapper/SysDeptMapper.java",
+      "sha256": "8c7f626175139c38b5d2516b4dab12230a19bbcb22313c493295072f274b5ef2"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/mapper/SysMenuMapper.java",
+      "sha256": "0e6a9fedc75424d8506c2083658948dfcfa82000ecdf009081af37ae814873d3"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/mapper/SysPostMapper.java",
+      "sha256": "6bb04e32dd24606ec6fd08cd586b396ce7cf47b62c7cca7394887bf78f56a6ba"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/mapper/SysRoleDeptMapper.java",
+      "sha256": "d5c8a7b0f5691d9bb2dd4890e395c5659999de42e51fb412ab1dcfd195762b90"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/mapper/SysRoleMapper.java",
+      "sha256": "8818ceba738ad733f38f4270e8f217980be8a52e163128e328bf7c4b99b24e5c"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/mapper/SysRoleMenuMapper.java",
+      "sha256": "4b37de238f58a692e4c579ead2e63b726d6283c5b420bd65081a44ec4545df15"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/mapper/SysUserMapper.java",
+      "sha256": "7af4c842ce839b69e27fe1e0ba303868c5eb15803bde95df5b30ea389fcc4a90"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/mapper/SysUserPostMapper.java",
+      "sha256": "5510dde674824935f7d1f6b41269b7b8449c0f2bea6718d68ec9787a9469b97a"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/mapper/SysUserRoleMapper.java",
+      "sha256": "8d600b74f10f0ba4a4eb0e1434673cbd0451d98e0e481beda479b36cc7bcd6b2"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/service/ISysDeptService.java",
+      "sha256": "3d97aa90bfe480523e847d39a542cb23ff5acf9fbba425e9129546cf76d343af"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/service/ISysMenuService.java",
+      "sha256": "5f9aeead793e5e134dbdc06c1adaaeec80e291af9198b6d991355576eda9b93a"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/service/ISysPostService.java",
+      "sha256": "c310d4b34ec7dbc476651cab8234ac49a2d75867574534c76ed7175d24d08496"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/service/ISysRoleService.java",
+      "sha256": "21f398613745790ab92f92ecc01f8d9889f3bde670eafce4d850f8882ed803b6"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/service/ISysUserService.java",
+      "sha256": "908d07d69f1c0b5e91b7940cba50830154e9a1c51aaf667b8269b435fecb74fe"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/service/impl/SysDataScopeServiceImpl.java",
+      "sha256": "3e0f04d0db847f435845c0243e464bf0d82d99d14dc90c908efda665a6cfe2ab"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/service/impl/SysDeptServiceImpl.java",
+      "sha256": "3615edf230f06c42b8e7d4bf974d0ea8898d044599b3ebdaaa6a1bca61bc596b"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/service/impl/SysMenuServiceImpl.java",
+      "sha256": "97c19ed293106b42f1c788a81662363bc38a943573a62230329ac3aef28a0cfd"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/service/impl/SysPermissionServiceImpl.java",
+      "sha256": "c3875b468b15b6541b38512efe2c619f2e9c363590328bd6a5dc678400137503"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/service/impl/SysPostServiceImpl.java",
+      "sha256": "9fa6f0da10744021e646721b0628b7e97271693a9128fea4e8107bcbccd11ec2"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/service/impl/SysRoleServiceImpl.java",
+      "sha256": "cbbd463acdc37ac7e34348f292f0ba40f3b2bfcb3719455f4ef86acb8be7881a"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/java/org/dromara/system/service/impl/SysUserServiceImpl.java",
+      "sha256": "9ae0c9a33120cbfde586e900b3fb4b669bd518cf8acd788e6eb8271f49f8e222"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/resources/mapper/system/SysDeptMapper.xml",
+      "sha256": "8a373160079036583f27f05a956f8129550b55e3df1b10bfbc82a724b16b4d14"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/resources/mapper/system/SysMenuMapper.xml",
+      "sha256": "5aa2f11770125622dd5b5909a92a69545780df4f5d9e9e9ef081019d103e6521"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/resources/mapper/system/SysPostMapper.xml",
+      "sha256": "db0c226c45013bb5c93aef41b13f205b807036b692665bc210ef4d1cde48aa90"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/resources/mapper/system/SysRoleDeptMapper.xml",
+      "sha256": "98e75b7ee44d219615f2f598949342d06a70c97f7e2fc5a832d37e433549923e"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/resources/mapper/system/SysRoleMapper.xml",
+      "sha256": "dc5b9ee6411b07405e06b7efa367bc5055d01c3645e1263b607072edb9ab1df6"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/resources/mapper/system/SysRoleMenuMapper.xml",
+      "sha256": "47c9157459124fd2cc25dbef433f89a752b346a471496cea92f9292f1db94779"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/resources/mapper/system/SysUserMapper.xml",
+      "sha256": "d608b824a4c46bacc4c05e6ad48278992b7d64788e23bddc75ddb23d1869aafb"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/resources/mapper/system/SysUserPostMapper.xml",
+      "sha256": "cb7c5773270abd3400f914a898744c9014b5f58c6d8823a9e58bdd5414891984"
+    },
+    {
+      "path": "ruoyi-modules/ruoyi-system/src/main/resources/mapper/system/SysUserRoleMapper.xml",
+      "sha256": "fb1a34262c6dc3c3138681e0f76bc444997018b699a2596fe9f1723940180203"
+    },
+    {
+      "path": "script/sql/postgres/postgres_ry_vue_5.X.sql",
+      "sha256": "b81909bb9e9b5e9996eea096badcb4a011177a5404311cb46f1f738bc28aa5b3"
+    }
+  ],
+  "currentFiles": [
+    {
+      "path": "prisma/migrations/20261015084855_init/migration.sql",
+      "sha256": "9545def47fea49c8a60762500fd30dbbc5fedb0b7952d70409b4e02d0c2197be"
+    },
+    {
+      "path": "prisma/models/dept.prisma",
+      "sha256": "9e436b5c151228939b3f44dff6ecb0d7eb2c6674124b49bf12161e654cbda05e"
+    },
+    {
+      "path": "prisma/models/post.prisma",
+      "sha256": "81477cbac11da60d85d471442c88796489734c53f6b69285e69a4f67c90973b6"
+    },
+    {
+      "path": "prisma/models/role.prisma",
+      "sha256": "211939e472610383f03cceccd793d1214a67b78bb9e4af40e9e26b9f4976faf2"
+    },
+    {
+      "path": "prisma/models/user.prisma",
+      "sha256": "54097ff5e4644766c969a4b564ff33b3b8d41dc6ddaa48bb9b20f3e97df3cb40"
+    },
+    {
+      "path": "prisma/schema.prisma",
+      "sha256": "ec2bd8b66f227277d33ad633f5a4efde42c0fd109d40dded440e824ff1a019dd"
+    }
+  ],
+  "artifacts": {
+    "target.sql": "5e6e401f25fe7fea9922043e3a0ac722fb1e7abd35bbb70708e61a1dcfb385f9",
+    "target.schema.json": "adc2b9eb0a81a567a8ce31e813c4678dffebb038452238b42f35dfb214f91501",
+    "current.schema.json": "0db2c36a5e5808d2f162e67e2de6c8de2c5cb9609d622358e3f732315a81f4a9",
+    "schema-diff.json": "15f2ecc0e1d72accc1d1c17cc7be0aa3e849db8f241c2f0e9ac2f26ad4e84a55",
+    "http-contract.json": "e451331ebea67fb8d814b52db752a8c8ba53cc58c757342bfcb8f87d2459cda2"
+  }
+}
