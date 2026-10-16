@@ -2,63 +2,27 @@
 /// 对应数据库表 sys_dept
 model Dept {
   /// 部门唯一标识，id 自增
-  deptId BigInt @id @default(autoincrement()) @map("dept_id")
-
-  /// 租户ID，用于多租户隔离，默认为系统租户 '000000'
-  tenantId String @default("000000") @map("tenant_id") @db.VarChar(20)
-
+  deptId    BigInt    @id @default(autoincrement()) @map("dept_id")
   /// 父部门 ID，可为空（顶级部门为空）
-  parentId BigInt? @map("parent_id")
-
-  /// 祖级列表，记录从根部门到当前部门的路径，用逗号分隔
-  /// 例如: "100,101,102"，便于权限过滤和数据查询
-  ancestors String? @db.VarChar(500)
-
+  parentId  BigInt?   @map("parent_id")
   /// 部门名称
-  deptName String @map("dept_name") @db.VarChar(64)
-
-  /// 部门分类编码，用于系统分类
-  deptCategory String? @map("dept_category") @db.VarChar(100)
-
+  deptName  String    @map("dept_name") @db.VarChar(64)
   /// 同级排序号，越小越靠前
-  sortOrder Int @default(0) @map("sort_order") @db.SmallInt
-
-  /// 部门负责人用户ID，可选
-  leader BigInt?
-
-  /// 联系电话
-  phone String? @db.VarChar(11)
-
-  /// 电子邮箱
-  email String? @db.VarChar(50)
-
-  /// 部门状态 0 停用 1 正常
-  status Int @default(1) @db.SmallInt
-
-  /// 创建该部门记录的部门ID
-  createDept BigInt? @map("create_dept")
-
-  /// 创建该部门记录的用户ID
-  createBy BigInt? @map("create_by")
-
+  sortOrder Int       @default(0) @map("sort_order") @db.SmallInt
+  /// 部门状态 0 禁用 1 正常
+  status    Int       @default(1) @db.SmallInt
   /// 部门记录创建时间
-  createdTime DateTime @default(now()) @map("created_time") @db.Timestamptz(3)
-
-  /// 最后更新该部门记录的用户ID
-  updateBy BigInt? @map("update_by")
-
+  createdTime DateTime  @default(now()) @map("created_time") @db.Timestamptz(3)
   /// 部门记录最后更新时间
-  updatedTime DateTime @updatedAt @map("updated_time") @db.Timestamptz(3)
-
+  updatedTime DateTime  @updatedAt @map("updated_time") @db.Timestamptz(3)
   /// 软删除标记：0 未删除，1 已删除
-  isDel Int @default(0) @map("is_del") @db.SmallInt
-
+  isDel     Int         @default(0) @map("is_del") @db.SmallInt
   /// 关联的父部门（自关联，多对一）
-  parent Dept? @relation("DeptTree", fields: [parentId], references: [deptId], onDelete: Restrict, onUpdate: Cascade)
+  parent    Dept?     @relation("DeptTree", fields: [parentId], references: [deptId], onDelete: Restrict, onUpdate: Cascade)
   /// 关联的子部门（自关联，一对多）
-  children Dept[] @relation("DeptTree")
+  children  Dept[]    @relation("DeptTree")
   /// 关联的该部门下的用户
-  users User[]
+  users     User[]
   /// 关联的角色-部门关系（角色自定义数据权限用）
   roleDepts RoleDept[]
 
@@ -66,10 +30,6 @@ model Dept {
   @@index([parentId])
   /// 为软删除标记建立索引
   @@index([isDel])
-  /// 为租户ID建立索引
-  @@index([tenantId])
-  /// 为部门状态建立索引
-  @@index([status])
   /// 指定数据库表名为 sys_dept
   @@map("sys_dept")
 }

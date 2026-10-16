@@ -2,64 +2,26 @@
 /// 对应数据库表 sys_post
 model Post {
   /// 岗位唯一标识，id 自增
-  postId BigInt @id @default(autoincrement()) @map("post_id")
-
-  /// 租户ID，用于多租户隔离，默认为系统租户 '000000'
-  tenantId String @default("000000") @map("tenant_id") @db.VarChar(20)
-
-  /// 所属部门ID，可选
-  deptId BigInt? @map("dept_id")
-
+  postId    BigInt    @id @default(autoincrement()) @map("post_id")
   /// 岗位编码，全局唯一
-  postCode String @unique @map("post_code") @db.VarChar(64)
-
+  postCode  String    @unique @map("post_code") @db.VarChar(64)
   /// 岗位名称
-  postName String @map("post_name") @db.VarChar(50)
-
-  /// 岗位分类编码，用于对岗位进行分类
-  postCategory String? @map("post_category") @db.VarChar(100)
-
+  postName  String    @map("post_name") @db.VarChar(64)
   /// 同级排序号，越小越靠前
-  postSort Int @default(0) @map("post_sort")
-
-  /// 岗位状态 0 停用 1 正常
-  status Int @default(1) @db.SmallInt
-
-  /// 是否为系统内置岗位，系统岗位不能被删除
-  isSystem Boolean @default(false) @map("is_system")
-
-  /// 创建该岗位记录的部门ID
-  createDept BigInt? @map("create_dept")
-
-  /// 创建该岗位记录的用户ID
-  createBy BigInt? @map("create_by")
-
+  sortOrder Int       @default(0) @map("sort_order") @db.SmallInt
+  /// 岗位状态 0 禁用 1 正常
+  status    Int       @default(1) @db.SmallInt
   /// 岗位记录创建时间
   createdTime DateTime @default(now()) @map("created_time") @db.Timestamptz(3)
-
-  /// 最后更新该岗位记录的用户ID
-  updateBy BigInt? @map("update_by")
-
   /// 岗位记录最后更新时间
   updatedTime DateTime @updatedAt @map("updated_time") @db.Timestamptz(3)
-
-  /// 备注信息
-  remark String? @db.VarChar(500)
-
   /// 软删除标记：0 未删除，1 已删除
-  isDel Int @default(0) @map("is_del") @db.SmallInt
-
+  isDel       Int      @default(0) @map("is_del") @db.SmallInt
   /// 关联的用户-岗位关系（多对多中间表）
   users UserPost[]
 
   /// 为软删除标记建立索引
   @@index([isDel])
-  /// 为租户ID建立索引
-  @@index([tenantId])
-  /// 为部门ID建立索引
-  @@index([deptId])
-  /// 为岗位状态建立索引
-  @@index([status])
   /// 指定数据库表名为 sys_post
   @@map("sys_post")
 }
