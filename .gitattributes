@@ -1,2 +1,0 @@
-# 冻结产物使用固定换行，避免 Windows checkout 改变 SHA-256。
-docs/ruoyi/phase0/* text eol=lf

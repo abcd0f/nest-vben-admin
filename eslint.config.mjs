@@ -35,13 +35,4 @@ export default antfu(
       'antfu/no-top-level-await': 'off',
     },
   },
-  {
-    files: ['script/ruoyi/*.mjs'],
-    rules: {
-      // 此规则在当前依赖版本中会把 JS 的运行时变量误判为仅类型使用。
-      'unused-imports/no-unused-vars': 'off',
-      'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
-      'test/no-import-node-test': 'off',
-    },
-  },
 );

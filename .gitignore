@@ -58,6 +58,3 @@ pids
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 .workbuddy-ai
-
-# 数据库备份和逐行迁移盘点只保存在本机
-/.local/ruoyi-phase0/
