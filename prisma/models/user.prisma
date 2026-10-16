@@ -1,51 +1,68 @@
 /// 系统用户模型
 /// 对应数据库表 sys_user
 model User {
-  /// 用户唯一标识，id 自增
-  userId BigInt @id @default(autoincrement()) @map("user_id")
+  /// 用户唯一标识
+  userId BigInt @id @map("user_id")
+
+  /// 租户ID
+  tenantId String @default("000000") @map("tenant_id") @db.VarChar(20)
 
   /// 主部门 ID，可为空；同一部门可归属多个用户
   deptId BigInt? @map("dept_id")
 
-  /// 用户登录账号，全局唯一
-  username String @unique @db.VarChar(64)
+  /// 用户登录账号，长度限制 2-30
+  userName String @unique @map("user_name") @db.VarChar(30)
 
-  /// 用户昵称，可为空
-  nickName String? @map("nickname") @db.VarChar(64)
+  /// 用户昵称，长度限制 30
+  nickName String @map("nick_name") @db.VarChar(30)
 
-  /// 用户手机号码，可为空且全局唯一
-  phone String? @unique @db.VarChar(32)
+  /// 用户类型，可为空
+  userType String? @default("00") @map("user_type") @db.VarChar(10)
 
-  /// 用户性别，可为空
-  /// 默认值：0； 0 男 1 女
-  sex Int? @default(0) @db.SmallInt
+  /// 用户邮箱，长度限制 50
+  email String? @map("email") @db.VarChar(50)
 
-  /// 用户头像地址，可为空
-  avatar String? @db.VarChar(255)
+  /// 用户手机号码，长度限制 11
+  phonenumber String? @map("phonenumber") @db.VarChar(11)
 
-  /// 用户电子邮箱，可为空且全局唯一
-  email String? @unique @db.VarChar(128)
+  /// 用户性别：0 男 1 女 2 未知
+  sex String? @default("0") @map("sex") @db.Char(1)
 
-  /// 用户密码哈希值 应存储经过安全算法处理的密码哈希，禁止存储明文密码
-  password String @db.VarChar(255)
+  /// 用户头像 OSS 对象 ID
+  avatar BigInt? @map("avatar")
 
-  /// 用户状态 0 禁用 1 正常
-  status Int @default(1) @db.SmallInt
+  /// 用户密码哈希值 (BCrypt)
+  password String @db.VarChar(100)
 
-  /// 用户最近一次登录的 IP 地址
-  loginIp String? @map("login_ip") @db.VarChar(64)
+  /// 用户状态：'0' 正常 '1' 停用
+  status String @default("0") @map("status") @db.Char(1)
 
-  /// 用户最近一次登录时间
+  /// 删除标志：'0' 未删除 '2' 已删除
+  delFlag String @default("0") @map("del_flag") @db.Char(1)
+
+  /// 最后登录IP
+  loginIp String? @map("login_ip") @db.VarChar(128)
+
+  /// 最后登录时间
   loginDate DateTime? @map("login_date") @db.Timestamptz(3)
 
-  /// 用户记录创建时间
-  createdTime DateTime @default(now()) @map("created_time") @db.Timestamptz(3)
+  /// 创建部门
+  createDept BigInt? @map("create_dept")
 
-  /// 用户记录最后更新时间
-  updatedTime DateTime @updatedAt @map("updated_time") @db.Timestamptz(3)
+  /// 创建者
+  createBy BigInt? @map("create_by")
 
-  /// 用户软删除标记：0 未删除，1 已删除
-  isDel Int @default(0) @map("is_del") @db.SmallInt
+  /// 创建时间
+  createTime DateTime @default(now()) @map("create_time") @db.Timestamptz(3)
+
+  /// 更新者
+  updateBy BigInt? @map("update_by")
+
+  /// 更新时间
+  updateTime DateTime @updatedAt @map("update_time") @db.Timestamptz(3)
+
+  /// 备注
+  remark String? @map("remark") @db.VarChar(500)
 
   /// 关联的主部门（多对一）
   dept  Dept?      @relation(fields: [deptId], references: [deptId], onDelete: Restrict, onUpdate: Cascade)
@@ -54,10 +71,12 @@ model User {
   /// 关联的用户-角色关系（多对多中间表）
   roles UserRole[]
 
-  /// 为软删除标记建立索引
-  @@index([isDel])
+  /// 为租户ID建立索引
+  @@index([tenantId])
   /// 为部门外键建立索引
   @@index([deptId])
+  /// 为删除标志建立索引
+  @@index([delFlag])
   /// 指定数据库表名为 sys_user
   @@map("sys_user")
 }

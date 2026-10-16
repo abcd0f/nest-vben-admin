@@ -1,27 +1,58 @@
 /// 系统岗位模型
 /// 对应数据库表 sys_post
 model Post {
-  /// 岗位唯一标识，id 自增
-  postId    BigInt    @id @default(autoincrement()) @map("post_id")
-  /// 岗位编码，全局唯一
-  postCode  String    @unique @map("post_code") @db.VarChar(64)
+  /// 岗位唯一标识
+  postId BigInt @id @map("post_id")
+
+  /// 租户ID
+  tenantId String @default("000000") @map("tenant_id") @db.VarChar(20)
+
+  /// 所属部门ID
+  deptId BigInt @map("dept_id")
+
+  /// 岗位编码
+  postCode String @map("post_code") @db.VarChar(64)
+
+  /// 岗位类别编码
+  postCategory String? @map("post_category") @db.VarChar(100)
+
   /// 岗位名称
-  postName  String    @map("post_name") @db.VarChar(64)
-  /// 同级排序号，越小越靠前
-  sortOrder Int       @default(0) @map("sort_order") @db.SmallInt
-  /// 岗位状态 0 禁用 1 正常
-  status    Int       @default(1) @db.SmallInt
-  /// 岗位记录创建时间
-  createdTime DateTime @default(now()) @map("created_time") @db.Timestamptz(3)
-  /// 岗位记录最后更新时间
-  updatedTime DateTime @updatedAt @map("updated_time") @db.Timestamptz(3)
-  /// 软删除标记：0 未删除，1 已删除
-  isDel       Int      @default(0) @map("is_del") @db.SmallInt
+  postName String @map("post_name") @db.VarChar(50)
+
+  /// 显示顺序
+  postSort Int @default(0) @map("post_sort")
+
+  /// 岗位状态：'0' 正常 '1' 停用
+  status String @default("0") @map("status") @db.Char(1)
+
+  /// 创建部门
+  createDept BigInt? @map("create_dept")
+
+  /// 创建者
+  createBy BigInt? @map("create_by")
+
+  /// 创建时间
+  createTime DateTime @default(now()) @map("create_time") @db.Timestamptz(3)
+
+  /// 更新者
+  updateBy BigInt? @map("update_by")
+
+  /// 更新时间
+  updateTime DateTime @updatedAt @map("update_time") @db.Timestamptz(3)
+
+  /// 备注
+  remark String? @map("remark") @db.VarChar(500)
+
+  /// 关联的部门
+  dept Dept @relation(fields: [deptId], references: [deptId], onDelete: Restrict, onUpdate: Cascade)
+
   /// 关联的用户-岗位关系（多对多中间表）
   users UserPost[]
 
-  /// 为软删除标记建立索引
-  @@index([isDel])
+  /// 为租户ID建立索引
+  @@index([tenantId])
+  /// 为部门ID建立索引
+  @@index([deptId])
   /// 指定数据库表名为 sys_post
   @@map("sys_post")
 }
