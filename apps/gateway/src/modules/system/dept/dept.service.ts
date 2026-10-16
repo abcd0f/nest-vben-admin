@@ -1,6 +1,6 @@
 import { toDto } from '@app/common';
 import { BusinessException } from '@app/core';
-import { nextSnowflakeId, PrismaService } from '@app/database';
+import { PrismaService } from '@app/database';
 import { Injectable } from '@nestjs/common';
 import { DeptDto } from './dto/dept.dto.js';
 import { DeptResponseDto } from './dto/response.dto.js';
@@ -27,7 +27,7 @@ export class DeptService {
     const parentId = dto.parentId ? BigInt(dto.parentId) : null;
     if (parentId !== null) await this.assertActive(parentId);
     const row = await this.prisma.dept.create({
-      data: { deptId: nextSnowflakeId(), deptName: dto.deptName, parentId, sortOrder: dto.sortOrder ?? 0, status: dto.status ?? 1 },
+      data: { deptName: dto.deptName, parentId, sortOrder: dto.sortOrder ?? 0, status: dto.status ?? 1 },
     });
     return toDto(DeptResponseDto, row)!;
   }

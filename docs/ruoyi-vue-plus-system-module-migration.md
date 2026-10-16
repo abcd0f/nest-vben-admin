@@ -2,7 +2,7 @@
 
 ## 1. 文档目的
 
-本文以 [RuoYi-Vue-Plus 5.6.2](E:\test\nest-vben-admin\RuoYi-Vue-Plus-5.X) 的用户、角色、菜单、部门、岗位模块为目标，对照当前 NestJS + Prisma 项目，定义数据库对齐范围、行为差距、依赖顺序、迁移步骤和逐步验收标准。阶段 0 的实施结果与复现命令见 [阶段 0 基线说明](ruoyi/phase0/README.md)；阶段 1 的离线准备和限制见 [阶段 1 说明](ruoyi/phase1/README.md)。
+本文以 [RuoYi-Vue-Plus 5.6.2](E:\test\nest-vben-admin\RuoYi-Vue-Plus-5.X) 的用户、角色、菜单、部门、岗位模块为目标，对照当前 NestJS + Prisma 项目，定义数据库对齐范围、行为差距、依赖顺序、迁移步骤和逐步验收标准。阶段 0 的实施结果与复现命令见 [阶段 0 基线说明](ruoyi/phase0/README.md)；后续阶段尚未实施。
 
 目标是把五个模块的数据库结构和可观察业务行为对齐到目标版本，同时保留当前 PostgreSQL 数据。验收依据为目标项目 PostgreSQL DDL 和 Java 服务实现，不把 RuoYi 的 MySQL 方言直接复制到当前数据库。
 

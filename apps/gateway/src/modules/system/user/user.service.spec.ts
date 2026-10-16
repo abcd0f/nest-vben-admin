@@ -4,7 +4,6 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from './user.service.js';
 
 describe('userService password and ID contract', () => {
-  afterEach(() => vi.unstubAllEnvs());
   const id = 9007199254740993n;
   const user = {
     userId: id,
@@ -19,8 +18,6 @@ describe('userService password and ID contract', () => {
   };
 
   it('hashes a new password and returns the full decimal ID', async () => {
-    vi.stubEnv('SNOWFLAKE_WORKER_ID', '0');
-    vi.stubEnv('SNOWFLAKE_DATACENTER_ID', '0');
     const create = vi.fn().mockResolvedValue(user);
     const prisma = { user: { findUnique: vi.fn().mockResolvedValue(null), create } } as unknown as PrismaService;
     const auth = new AuthService(prisma, new JwtService({ secret: 'test-secret' }), {
@@ -32,7 +29,6 @@ describe('userService password and ID contract', () => {
 
     const response = await service.create({ username: 'test-user', password: 'P@ssw0rd' });
     const stored = create.mock.calls[0][0].data.password;
-    expect(typeof create.mock.calls[0][0].data.userId).toBe('bigint');
 
     expect(stored).not.toBe('P@ssw0rd');
     expect(await auth.verifyPassword('P@ssw0rd', stored)).toBe(true);

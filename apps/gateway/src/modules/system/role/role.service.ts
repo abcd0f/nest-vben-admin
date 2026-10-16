@@ -1,6 +1,6 @@
 import { toDto } from '@app/common';
 import { BusinessException } from '@app/core';
-import { nextSnowflakeId, PrismaService } from '@app/database';
+import { PrismaService } from '@app/database';
 import { Injectable } from '@nestjs/common';
 
 import { CreateRoleDto, DataScope, ReplaceIdsDto, RoleResponseDto, UpdateRoleDto } from './dto/role.dto.js';
@@ -23,7 +23,6 @@ export class RoleService {
   async create(dto: CreateRoleDto) {
     const row = await this.prisma.role.create({
       data: {
-        roleId: nextSnowflakeId(),
         roleCode: dto.roleCode,
         roleName: dto.roleName,
         dataScope: dto.dataScope ?? DataScope.SELF,
