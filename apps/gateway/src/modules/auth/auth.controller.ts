@@ -39,4 +39,10 @@ export class AuthController {
   changePassword(@CurrentUser() current: { userId: bigint }, @Body() dto: ChangePasswordDto) {
     return this.users.changeOwnPassword(current.userId, dto);
   }
+
+  @AuthOnly()
+  @Get('codes')
+  async getAccessCodes(@CurrentUser() current: { userId: bigint }) {
+    return this.auth.getAccessCodes(current.userId);
+  }
 }

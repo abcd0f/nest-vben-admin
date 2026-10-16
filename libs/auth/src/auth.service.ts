@@ -139,4 +139,46 @@ export class AuthService {
     if (!user) throw BusinessException.unauthorized();
     return user;
   }
+
+  /**
+   * 获取用户的权限码列表
+   * 通过用户角色和菜单关系查询所有有效的权限码
+   */
+  async getAccessCodes(userId: bigint): Promise<string[]> {
+    await this.assertActiveUser(userId);
+
+    // 查询用户所有启用的角色关联的菜单权限码
+    const menus = await this.prisma.menu.findMany({
+      where: {
+        roleMenus: {
+          some: {
+            role: {
+              status: 1,
+              isDel: 0,
+              userRoles: {
+                some: {
+                  userId,
+                  user: {
+                    status: 1,
+                    isDel: 0,
+                  },
+                },
+              },
+            },
+          },
+        },
+        permissionCode: { not: null },
+        status: 1,
+        isDel: 0,
+      },
+      select: {
+        permissionCode: true,
+      },
+      distinct: ['permissionCode'],
+    });
+
+    return menus
+      .map((menu) => menu.permissionCode)
+      .filter((code): code is string => code !== null);
+  }
 }
