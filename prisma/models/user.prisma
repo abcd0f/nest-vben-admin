@@ -4,6 +4,9 @@ model User {
   /// 用户唯一标识，id 自增
   userId BigInt @id @default(autoincrement()) @map("user_id")
 
+  /// 租户ID，用于多租户隔离，默认为系统租户 '000000'
+  tenantId String @default("000000") @map("tenant_id") @db.VarChar(20)
+
   /// 主部门 ID，可为空；同一部门可归属多个用户
   deptId BigInt? @map("dept_id")
 
@@ -11,38 +14,54 @@ model User {
   username String @unique @db.VarChar(64)
 
   /// 用户昵称，可为空
-  nickName String? @map("nickname") @db.VarChar(64)
+  nickname String? @map("nickname") @db.VarChar(64)
 
-  /// 用户手机号码，可为空且全局唯一
-  phone String? @unique @db.VarChar(32)
-
-  /// 用户性别，可为空
-  /// 默认值：0； 0 男 1 女
-  sex Int? @default(0) @db.SmallInt
-
-  /// 用户头像地址，可为空
-  avatar String? @db.VarChar(255)
+  /// 用户类型，默认 'sys_user' 表示系统用户
+  userType String @default("sys_user") @map("user_type") @db.VarChar(10)
 
   /// 用户电子邮箱，可为空且全局唯一
   email String? @unique @db.VarChar(128)
 
+  /// 用户手机号码，可为空且全局唯一
+  phonenumber String? @unique @map("phonenumber") @db.VarChar(11)
+
+  /// 用户性别，可为空
+  /// 默认值：0； 0 男 1 女 2 未知
+  sex Int? @default(0) @db.SmallInt
+
+  /// 用户头像地址，可为空
+  /// 存储 OSS 文件ID 或 URL
+  avatar String? @db.VarChar(255)
+
   /// 用户密码哈希值 应存储经过安全算法处理的密码哈希，禁止存储明文密码
   password String @db.VarChar(255)
 
-  /// 用户状态 0 禁用 1 正常
+  /// 用户状态 0 停用 1 正常
   status Int @default(1) @db.SmallInt
 
   /// 用户最近一次登录的 IP 地址
-  loginIp String? @map("login_ip") @db.VarChar(64)
+  loginIp String? @map("login_ip") @db.VarChar(128)
 
   /// 用户最近一次登录时间
   loginDate DateTime? @map("login_date") @db.Timestamptz(3)
 
+  /// 创建该用户记录的部门ID
+  createDept BigInt? @map("create_dept")
+
+  /// 创建该用户记录的用户ID
+  createBy BigInt? @map("create_by")
+
   /// 用户记录创建时间
   createdTime DateTime @default(now()) @map("created_time") @db.Timestamptz(3)
 
+  /// 最后更新该用户记录的用户ID
+  updateBy BigInt? @map("update_by")
+
   /// 用户记录最后更新时间
   updatedTime DateTime @updatedAt @map("updated_time") @db.Timestamptz(3)
+
+  /// 备注信息
+  remark String? @db.VarChar(500)
 
   /// 用户软删除标记：0 未删除，1 已删除
   isDel Int @default(0) @map("is_del") @db.SmallInt
@@ -58,6 +77,10 @@ model User {
   @@index([isDel])
   /// 为部门外键建立索引
   @@index([deptId])
+  /// 为租户ID建立索引
+  @@index([tenantId])
+  /// 为用户状态建立索引
+  @@index([status])
   /// 指定数据库表名为 sys_user
   @@map("sys_user")
 }
